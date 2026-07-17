@@ -1,36 +1,164 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏡 PropIntel AI
 
-## Getting Started
+> AI-Powered Real Estate Intelligence Platform
 
-First, run the development server:
+PropIntel AI helps home buyers and real estate investors make smarter property decisions using Artificial Intelligence. Instead of relying on scattered information, users can analyze properties, review legal documents, assess investment potential, and receive AI-powered insights from a single platform.
+
+🌐 **Live Demo:** https://propintel-ai-gamma.vercel.app/
+
+---
+
+## ✨ Features
+
+- 🤖 AI-Powered Property Analysis
+- 📄 Legal Document Review
+- ⚖️ Risk Assessment
+- 📈 Investment Score
+- 💬 AI Property Assistant
+- 📊 Smart Reports & Insights
+- 📱 Fully Responsive Design
+- 🎨 Modern UI built with shadcn/ui & Tailwind CSS
+
+---
+
+## 🚀 Tech Stack
+
+### Frontend
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui
+- Lucide React
+
+### Backend *(Coming Soon)*
+
+- Node.js
+- Express.js
+- MongoDB
+- JWT Authentication
+
+### AI *(Planned)*
+
+- OpenAI API
+- Property Intelligence
+- Legal Document Analysis
+- AI Chat Assistant
+- Investment Recommendation Engine
+
+---
+
+## 📂 Project Structure
+
+```text
+propintel-ai/
+│
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   ├── hooks/
+│   ├── lib/
+│   ├── styles/
+│   ├── utils/
+│   └── package.json
+│
+├── README.md
+└── LICENSE
+```
+
+---
+
+## 🖥️ Current Progress
+
+- ✅ Landing Page
+- ✅ Responsive UI
+- ✅ Vercel Deployment
+- ✅ GitHub Repository
+- 🔄 Authentication (In Progress)
+- 🔄 Dashboard (Upcoming)
+- 🔄 AI Integration (Planned)
+
+---
+
+## 🎯 Roadmap
+
+### Phase 1
+- [x] Landing Page
+- [x] Responsive Design
+- [x] Deployment
+
+### Phase 2
+- [ ] Login & Signup
+- [ ] JWT Authentication
+- [ ] Dashboard
+
+### Phase 3
+- [ ] Property Analysis
+- [ ] AI Chat Assistant
+- [ ] Legal Document Analysis
+
+### Phase 4
+- [ ] Investment Prediction
+- [ ] Report Generation
+- [ ] Property Image Analysis
+
+---
+
+## 💻 Local Setup
+
+Clone the repository
+
+```bash
+git clone https://github.com/jsaksham3010/propintel-ai.git
+```
+
+Go to the frontend directory
+
+```bash
+cd propintel-ai/frontend
+```
+
+Install dependencies
+
+```bash
+npm install
+```
+
+Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions, suggestions, and feedback are welcome. Feel free to fork the repository and submit a pull request.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📬 Contact
 
-## Deploy on Vercel
+**Developer:** Saksham Jain
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- GitHub: https://github.com/jsaksham3010
+- LinkedIn: https://www.linkedin.com/in/saksham-jain-31737224a/
+- Email: jainsaksham3010@gmail.com
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ⭐ Support
+
+If you found this project useful, consider giving it a ⭐ on GitHub.
+
+---
+
+### Made with ❤️ using Next.js, React, TypeScript & Tailwind CSS.
