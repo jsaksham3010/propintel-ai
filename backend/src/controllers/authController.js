@@ -54,7 +54,6 @@ exports.signup = async (req, res) => {
 // Login
 exports.login = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -102,6 +101,26 @@ exports.login = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
       },
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+// Get Current User
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password");
+
+    return res.status(200).json({
+      success: true,
+      user,
     });
 
   } catch (err) {
