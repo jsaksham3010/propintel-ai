@@ -1,4 +1,5 @@
 const Property = require("../models/Property");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 // Create Property
 exports.createProperty = async (req, res) => {
@@ -163,6 +164,60 @@ exports.deleteProperty = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
+    });
+  }
+};
+exports.uploadPropertyImages = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
+    }
+
+    if (property.owner.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized",
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No images uploaded",
+      });
+    }
+
+    const uploadedImages = [];
+
+    for (const file of req.files) {
+      const result = await uploadToCloudinary(file.buffer);
+
+      uploadedImages.push({
+        url: result.secure_url,
+        public_id: result.public_id,
+      });
+    }
+
+    property.images.push(...uploadedImages);
+
+    await property.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Images uploaded successfully",
+      images: property.images,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

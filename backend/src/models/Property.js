@@ -41,6 +41,30 @@ const propertySchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+
+    images: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        public_id: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+
+    // AI Analysis
+    aiReport: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+
+    analyzedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
