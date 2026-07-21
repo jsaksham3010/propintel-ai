@@ -4,6 +4,8 @@ const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
+const googleAuthRoutes = require("./routes/googleAuthRoutes");
 
 const app = express();
 
@@ -20,5 +22,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/google-auth", googleAuthRoutes);
 
 module.exports = app;
