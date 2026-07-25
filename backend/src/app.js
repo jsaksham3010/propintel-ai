@@ -23,6 +23,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/properties", propertyRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/google-auth", googleAuthRoutes);
-
+app.use("/api/auth", googleAuthRoutes);
 module.exports = app;
