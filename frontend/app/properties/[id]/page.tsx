@@ -2,128 +2,101 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import {
-  MapPin,
-  IndianRupee,
-  Home,
-  Ruler,
-} from "lucide-react";
 
-import { getPropertyById } from "@/services/propertyDetailService";
+import PropertyInfo from "@/components/property/PropertyInfo";
+import ImageGallery from "@/components/property/ImageGallery";
+import UploadImages from "@/components/property/UploadImages";
+import AIAnalysis from "@/components/property/AIAnalysis";
+import AIReport from "@/components/property/AIReport";
+
+import {
+  getPropertyById,
+  getAIReport,
+} from "@/services/propertyDetailService";
 
 export default function PropertyDetailPage() {
   const params = useParams();
-
   const id = params.id as string;
 
   const [property, setProperty] = useState<any>(null);
+  const [aiReport, setAiReport] = useState<any>(null);
+
   const [loading, setLoading] = useState(true);
 
+  const fetchProperty = async () => {
+    try {
+      const propertyData = await getPropertyById(id);
+
+      setProperty(propertyData.property);
+
+      try {
+        const reportData = await getAIReport(id);
+
+        setAiReport(reportData.report);
+      } catch {
+        setAiReport(null);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProperty = async () => {
-      try {
-        const data = await getPropertyById(id);
-
-        setProperty(data.property);
-
-      } catch (error) {
-        console.error(
-          "Failed to fetch property",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
     if (id) {
       fetchProperty();
     }
-
   }, [id]);
-
 
   if (loading) {
     return (
-      <div className="p-10 text-gray-500">
-        Loading property...
+      <div className="min-h-screen flex items-center justify-center">
+        <h2 className="text-xl font-semibold text-gray-500">
+          Loading Property...
+        </h2>
       </div>
     );
   }
-
 
   if (!property) {
     return (
-      <div className="p-10 text-red-500">
-        Property not found
+      <div className="min-h-screen flex items-center justify-center">
+        <h2 className="text-xl font-semibold text-red-500">
+          Property not found.
+        </h2>
       </div>
     );
   }
 
-
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 py-10 px-6">
+      <div className="max-w-6xl mx-auto">
 
-      <div className="max-w-5xl mx-auto">
-
+        {/* Property Information */}
         <div className="bg-white rounded-3xl border shadow-sm p-8">
-
-          <h1 className="text-4xl font-bold text-gray-900">
-            {property.title}
-          </h1>
-
-
-          <div className="mt-4 flex items-center gap-2 text-gray-500">
-            <MapPin size={18}/>
-            {property.city}, {property.state}
-          </div>
-
-
-          <div className="grid md:grid-cols-3 gap-5 mt-8">
-
-
-            <div className="rounded-2xl bg-blue-50 p-5">
-              <IndianRupee className="text-blue-600"/>
-              <p className="mt-3 text-gray-500">
-                Price
-              </p>
-              <h3 className="text-xl font-bold">
-                ₹{property.price.toLocaleString()}
-              </h3>
-            </div>
-
-
-            <div className="rounded-2xl bg-blue-50 p-5">
-              <Ruler className="text-blue-600"/>
-              <p className="mt-3 text-gray-500">
-                Area
-              </p>
-              <h3 className="text-xl font-bold">
-                {property.area} sq.ft
-              </h3>
-            </div>
-
-
-            <div className="rounded-2xl bg-blue-50 p-5">
-              <Home className="text-blue-600"/>
-              <p className="mt-3 text-gray-500">
-                Type
-              </p>
-              <h3 className="text-xl font-bold">
-                {property.propertyType}
-              </h3>
-            </div>
-
-
-          </div>
-
-
+          <PropertyInfo property={property} />
         </div>
 
-      </div>
+        {/* Property Images */}
+        <ImageGallery images={property.images || []} />
 
+        {/* Upload Images */}
+        <UploadImages
+          propertyId={id}
+          onUploadSuccess={fetchProperty}
+        />
+
+        {/* AI Analysis */}
+        <AIAnalysis
+          propertyId={id}
+          onAnalysisComplete={fetchProperty}
+        />
+
+        {/* AI Report */}
+        <AIReport report={aiReport} />
+
+      </div>
     </div>
   );
 }
