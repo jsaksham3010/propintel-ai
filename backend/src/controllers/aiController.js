@@ -4,7 +4,9 @@ const {
   analyzePropertyImages,
 } = require("../services/geminiService");
 
+// ==============================
 // Test Gemini Connection
+// ==============================
 exports.testAI = async (req, res) => {
   try {
     const response = await ai.models.generateContent({
@@ -12,26 +14,31 @@ exports.testAI = async (req, res) => {
       contents: "Say hello from PropIntel AI.",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       response: response.text,
     });
   } catch (error) {
     console.error("Gemini Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message || "Failed to connect to Gemini AI",
     });
   }
 };
 
+// ==============================
 // Analyze Property Images
+// ==============================
 exports.analyzeProperty = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    const property = await Property.findById(propertyId);
+    const property = await Property.findOne({
+      _id: propertyId,
+      owner: req.user.id,
+    });
 
     if (!property) {
       return res.status(404).json({
@@ -51,13 +58,12 @@ exports.analyzeProperty = async (req, res) => {
 
     const aiReport = await analyzePropertyImages(imageUrls);
 
-    // Remove markdown code fences if present
-    let cleanReport = aiReport
+    // Remove markdown if Gemini returns it
+    const cleanReport = aiReport
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    // Convert string to JSON
     let parsedReport;
 
     try {
@@ -70,7 +76,6 @@ exports.analyzeProperty = async (req, res) => {
       });
     }
 
-    // Save AI report in MongoDB
     property.aiReport = parsedReport;
     property.analyzedAt = new Date();
 
@@ -79,6 +84,7 @@ exports.analyzeProperty = async (req, res) => {
     return res.status(200).json({
       success: true,
       propertyId: property._id,
+      analyzedAt: property.analyzedAt,
       report: parsedReport,
     });
   } catch (error) {
@@ -90,12 +96,18 @@ exports.analyzeProperty = async (req, res) => {
     });
   }
 };
-// Get Saved AI Report
+
+// ==============================
+// Get Single AI Report
+// ==============================
 exports.getAIReport = async (req, res) => {
   try {
     const { propertyId } = req.params;
 
-    const property = await Property.findById(propertyId);
+    const property = await Property.findOne({
+      _id: propertyId,
+      owner: req.user.id,
+    });
 
     if (!property) {
       return res.status(404).json({
@@ -118,7 +130,36 @@ exports.getAIReport = async (req, res) => {
       report: property.aiReport,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Get AI Report Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ==============================
+// Get All AI Reports
+// ==============================
+exports.getMyReports = async (req, res) => {
+  try {
+    const reports = await Property.find({
+      owner: req.user.id,
+      aiReport: { $ne: null },
+    })
+      .select(
+        "title city state propertyType price area images aiReport analyzedAt createdAt"
+      )
+      .sort({ analyzedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: reports.length,
+      reports,
+    });
+  } catch (error) {
+    console.error("Get Reports Error:", error);
 
     return res.status(500).json({
       success: false,
