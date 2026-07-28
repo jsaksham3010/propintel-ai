@@ -29,7 +29,7 @@ const visionPoints = [
 
 export default function OurVision() {
   return (
-    <section className="py-24">
+    <section id="vision"className="scroll-mt-24 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mx-auto max-w-3xl text-center">
           <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-600">

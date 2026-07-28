@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import PropertyInfo from "@/components/property/PropertyInfo";
@@ -22,32 +22,43 @@ export default function PropertyDetailPage() {
   const [aiReport, setAiReport] = useState<any>(null);
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const fetchProperty = async () => {
+  const fetchProperty = useCallback(async () => {
     try {
-      const propertyData = await getPropertyById(id);
+      setLoading(true);
+      setError("");
 
-      setProperty(propertyData.property);
+      const [propertyResult, reportResult] = await Promise.allSettled([
+        getPropertyById(id),
+        getAIReport(id),
+      ]);
 
-      try {
-        const reportData = await getAIReport(id);
+      if (
+        propertyResult.status === "fulfilled" &&
+        propertyResult.value?.property
+      ) {
+        setProperty(propertyResult.value.property);
+      } else {
+        setError("Property not found.");
+      }
 
-        setAiReport(reportData.report);
-      } catch {
+      if (reportResult.status === "fulfilled") {
+        setAiReport(reportResult.value.report);
+      } else {
         setAiReport(null);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
-    if (id) {
-      fetchProperty();
-    }
-  }, [id]);
+    if (id) fetchProperty();
+  }, [id, fetchProperty]);
 
   if (loading) {
     return (
@@ -59,43 +70,43 @@ export default function PropertyDetailPage() {
     );
   }
 
-  if (!property) {
+  if (error || !property) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <h2 className="text-xl font-semibold text-red-500">
-          Property not found.
+          {error || "Property not found."}
         </h2>
+
+        <button
+          onClick={fetchProperty}
+          className="rounded-xl bg-indigo-600 px-5 py-2 text-white hover:bg-indigo-700"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6">
-      <div className="max-w-6xl mx-auto">
-
-        {/* Property Information */}
-        <div className="bg-white rounded-3xl border shadow-sm p-8">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <div className="rounded-3xl border bg-white p-8 shadow-sm">
           <PropertyInfo property={property} />
         </div>
 
-        {/* Property Images */}
         <ImageGallery images={property.images || []} />
 
-        {/* Upload Images */}
         <UploadImages
           propertyId={id}
           onUploadSuccess={fetchProperty}
         />
 
-        {/* AI Analysis */}
         <AIAnalysis
           propertyId={id}
           onAnalysisComplete={fetchProperty}
         />
 
-        {/* AI Report */}
         <AIReport report={aiReport} />
-
       </div>
     </div>
   );

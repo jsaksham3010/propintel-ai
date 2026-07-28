@@ -34,8 +34,9 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="py-24">
-      <div className="mx-auto max-w-4xl px-6">
+// FAQ.tsx
+<section id="faq" className="scroll-mt-24 ...">
+        <div className="mx-auto max-w-4xl px-6">
         <div className="text-center">
           <h2 className="text-4xl font-bold">
             Frequently Asked Questions

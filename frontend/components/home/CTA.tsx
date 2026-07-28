@@ -1,8 +1,11 @@
+"use client";
+
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function CTA() {
   return (
-    <section className="py-24">
+    <section id="contact" className="py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="rounded-3xl border bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-16 text-center text-white shadow-2xl md:px-16">
 
@@ -22,14 +25,20 @@ export default function CTA() {
           </p>
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <button className="flex items-center gap-2 rounded-xl bg-white px-7 py-3 font-semibold text-blue-700 transition hover:scale-105">
-              Get Started
+            <Link
+              href="/register"
+              className="flex items-center gap-2 rounded-xl bg-white px-7 py-3 font-semibold text-blue-700 transition hover:scale-105"
+            >
+              Start Free
               <ArrowRight size={18} />
-            </button>
+            </Link>
 
-            <button className="rounded-xl border border-white/30 px-7 py-3 font-semibold text-white transition hover:bg-white/10">
+            <a
+              href="#features"
+              className="rounded-xl border border-white/30 px-7 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
               Learn More
-            </button>
+            </a>
           </div>
 
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-blue-100">

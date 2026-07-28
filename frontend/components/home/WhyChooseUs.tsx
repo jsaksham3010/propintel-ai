@@ -34,7 +34,8 @@ const reasons = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-24">
+    // WhyChooseUs.tsx
+<section id="why-us" className="scroll-mt-24 ...">
       <div className="mx-auto max-w-7xl px-6">
 
         <div className="text-center">
