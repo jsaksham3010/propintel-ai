@@ -1,12 +1,29 @@
+const mongoose = require("mongoose");
 const Property = require("../models/Property");
 const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
+// =========================
 // Create Property
+// =========================
 exports.createProperty = async (req, res) => {
   try {
-    const { title, city, state, price, area, propertyType } = req.body;
+    const {
+      title,
+      city,
+      state,
+      price,
+      area,
+      propertyType,
+    } = req.body;
 
-    if (!title || !city || !state || !price || !area || !propertyType) {
+    if (
+      !title ||
+      !city ||
+      !state ||
+      !price ||
+      !area ||
+      !propertyType
+    ) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -28,8 +45,10 @@ exports.createProperty = async (req, res) => {
       message: "Property created successfully",
       property,
     });
+
   } catch (err) {
     console.error(err);
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
@@ -37,30 +56,150 @@ exports.createProperty = async (req, res) => {
   }
 };
 
+// =========================
 // Get My Properties
+// Search + Filter + Sort + Pagination
+// =========================
+
 exports.getMyProperties = async (req, res) => {
   try {
-    const properties = await Property.find({
+
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      city,
+      propertyType,
+      minPrice,
+      maxPrice,
+      sort,
+    } = req.query;
+
+
+    const query = {
       owner: req.user.id,
-    }).sort({ createdAt: -1 });
+    };
+
+
+    // Search
+    if (search) {
+      query.title = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+
+    // City Filter
+    if (city) {
+      query.city = {
+        $regex: city,
+        $options: "i",
+      };
+    }
+
+
+    // Property Type Filter
+    if (propertyType) {
+      query.propertyType = propertyType;
+    }
+
+
+    // Price Filter
+    if (minPrice || maxPrice) {
+
+      query.price = {};
+
+      if (minPrice) {
+        query.price.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        query.price.$lte = Number(maxPrice);
+      }
+
+    }
+
+
+    const skip =
+      (Number(page) - 1) * Number(limit);
+
+
+
+    let sortOption = {
+      createdAt: -1,
+    };
+
+
+    if (sort === "priceAsc") {
+      sortOption = {
+        price: 1,
+      };
+    }
+
+
+    if (sort === "priceDesc") {
+      sortOption = {
+        price: -1,
+      };
+    }
+
+
+    const properties = await Property.find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(Number(limit));
+
+
+    const total = await Property.countDocuments(query);
+
+
 
     return res.status(200).json({
+
       success: true,
+
+      page: Number(page),
+
+      limit: Number(limit),
+
+      total,
+
       count: properties.length,
+
       properties,
+
     });
+
+
   } catch (err) {
+
     console.error(err);
+
+
     return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
+
+      success:false,
+
+      message:"Internal Server Error",
+
     });
+
   }
 };
-
+// =========================
 // Get Property By ID
+// =========================
 exports.getPropertyById = async (req, res) => {
   try {
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid property ID",
+      });
+    }
+
     const property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -81,18 +220,32 @@ exports.getPropertyById = async (req, res) => {
       success: true,
       property,
     });
+
   } catch (err) {
+
     console.error(err);
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
+
   }
 };
 
+// =========================
 // Update Property
+// =========================
 exports.updateProperty = async (req, res) => {
   try {
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid property ID",
+      });
+    }
+
     const property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -109,9 +262,24 @@ exports.updateProperty = async (req, res) => {
       });
     }
 
+    const allowedUpdates = {
+      title: req.body.title,
+      city: req.body.city,
+      state: req.body.state,
+      price: req.body.price,
+      area: req.body.area,
+      propertyType: req.body.propertyType,
+    };
+
+    Object.keys(allowedUpdates).forEach((key) => {
+      if (allowedUpdates[key] === undefined) {
+        delete allowedUpdates[key];
+      }
+    });
+
     const updatedProperty = await Property.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      allowedUpdates,
       {
         new: true,
         runValidators: true,
@@ -123,18 +291,32 @@ exports.updateProperty = async (req, res) => {
       message: "Property updated successfully",
       property: updatedProperty,
     });
+
   } catch (err) {
+
     console.error(err);
+
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
+
   }
 };
 
+// =========================
 // Delete Property
+// =========================
 exports.deleteProperty = async (req, res) => {
   try {
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid property ID",
+      });
+    }
+
     const property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -151,6 +333,8 @@ exports.deleteProperty = async (req, res) => {
       });
     }
 
+    // Cloudinary image deletion can be added here later
+
     await Property.findByIdAndDelete(req.params.id);
 
     return res.status(200).json({
@@ -159,16 +343,29 @@ exports.deleteProperty = async (req, res) => {
     });
 
   } catch (err) {
+
     console.error(err);
 
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
     });
+
   }
 };
+// =========================
+// Upload Property Images
+// =========================
 exports.uploadPropertyImages = async (req, res) => {
   try {
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid property ID",
+      });
+    }
+
     const property = await Property.findById(req.params.id);
 
     if (!property) {
@@ -181,7 +378,7 @@ exports.uploadPropertyImages = async (req, res) => {
     if (property.owner.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
-        message: "Not authorized",
+        message: "Access denied",
       });
     }
 
@@ -192,32 +389,53 @@ exports.uploadPropertyImages = async (req, res) => {
       });
     }
 
+    // Maximum 10 images per property
+    if (property.images.length + req.files.length > 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Maximum 10 images are allowed per property",
+      });
+    }
+
     const uploadedImages = [];
 
     for (const file of req.files) {
-      const result = await uploadToCloudinary(file.buffer);
+      try {
+        const result = await uploadToCloudinary(file.buffer);
 
-      uploadedImages.push({
-        url: result.secure_url,
-        public_id: result.public_id,
-      });
+        uploadedImages.push({
+          url: result.secure_url,
+          public_id: result.public_id,
+        });
+      } catch (uploadError) {
+        console.error("Cloudinary Upload Error:", uploadError);
+
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload one or more images",
+        });
+      }
     }
 
     property.images.push(...uploadedImages);
 
     await property.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Images uploaded successfully",
+      count: property.images.length,
       images: property.images,
     });
-  } catch (error) {
-    console.error(error);
 
-    res.status(500).json({
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Internal Server Error",
     });
+
   }
 };

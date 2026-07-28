@@ -10,15 +10,37 @@ const {
 
 const { protect } = require("../middleware/authMiddleware");
 
-router.get("/test", testAI);
 
-// Analyze property with Gemini
-router.post("/analyze/:propertyId", protect, analyzeProperty);
+// AI Health Check
+router.get(
+  "/test",
+  protect,
+  testAI
+);
 
-// Fetch saved AI report
-router.get("/report/:propertyId", protect, getAIReport);
 
-// Fetch all AI reports of logged in user
-router.get("/reports", protect, getMyReports);
+// Analyze Property
+router.post(
+  "/analyze/:propertyId",
+  protect,
+  analyzeProperty
+);
+
+
+// Single AI Report
+router.get(
+  "/report/:propertyId",
+  protect,
+  getAIReport
+);
+
+
+// All AI Reports
+router.get(
+  "/reports",
+  protect,
+  getMyReports
+);
+
 
 module.exports = router;

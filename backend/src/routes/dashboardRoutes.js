@@ -7,12 +7,9 @@ const {
 
 const { protect } = require("../middleware/authMiddleware");
 
-
-router.get(
-  "/stats",
-  protect,
-  getDashboardStats
-);
-
+// ======================================
+// Dashboard Statistics
+// ======================================
+router.get("/stats", protect, getDashboardStats);
 
 module.exports = router;
