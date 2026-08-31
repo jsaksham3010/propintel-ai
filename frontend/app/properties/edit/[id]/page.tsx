@@ -16,6 +16,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Trash2,
+  Pencil,
 } from "lucide-react";
 
 
@@ -54,6 +55,7 @@ const id = params.id as string;
 
 
 
+
 const [property,setProperty] =
 useState<any>(null);
 
@@ -84,6 +86,7 @@ useState(false);
 
 
 
+
 const fetchProperty = useCallback(
 async()=>{
 
@@ -104,9 +107,12 @@ reportResult
 =
 await Promise.allSettled([
 
+
 getPropertyById(id),
 
+
 getAIReport(id),
+
 
 ]);
 
@@ -135,6 +141,9 @@ setError(
 
 
 }
+
+
+
 
 
 
@@ -259,6 +268,7 @@ setDeleting(false);
 }
 
 
+
 };
 
 
@@ -276,6 +286,7 @@ return(
 
 <div className="flex min-h-screen items-center justify-center">
 
+
 <h2 className="text-xl font-semibold text-gray-500">
 
 Loading Property...
@@ -289,6 +300,7 @@ Loading Property...
 
 
 }
+
 
 
 
@@ -313,6 +325,7 @@ return(
 
 
 
+
 <button
 
 onClick={fetchProperty}
@@ -324,6 +337,7 @@ className="rounded-xl bg-blue-600 px-5 py-2 text-white"
 Retry
 
 </button>
+
 
 
 </div>
@@ -358,6 +372,7 @@ return(
 
 
 
+{/* Actions */}
 
 
 <div className="flex items-center justify-between">
@@ -367,7 +382,7 @@ return(
 
 href="/properties"
 
-className="flex items-center gap-2 text-blue-600 font-medium"
+className="flex items-center gap-2 font-medium text-blue-600"
 
 >
 
@@ -381,12 +396,37 @@ Back to Properties
 
 
 
+<div className="flex gap-3">
+
+
+
+
+
+<Link
+
+href={`/properties/edit/${id}`}
+
+className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
+
+>
+
+<Pencil size={18}/>
+
+Edit Property
+
+</Link>
+
+
+
+
+
+
 
 <button
 
 onClick={()=>setDeleteOpen(true)}
 
-className="flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-white hover:bg-red-600"
+className="flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 font-semibold text-white hover:bg-red-600"
 
 >
 
@@ -397,6 +437,11 @@ Delete Property
 
 
 </button>
+
+
+
+
+</div>
 
 
 
@@ -429,11 +474,13 @@ property={property}
 
 
 
+
 <ImageGallery
 
 images={property.images || []}
 
 />
+
 
 
 
@@ -449,6 +496,7 @@ propertyId={id}
 onUploadSuccess={fetchProperty}
 
 />
+
 
 
 
@@ -493,6 +541,8 @@ property={property}
 
 
 </div>
+
+
 
 
 

@@ -1,89 +1,388 @@
-import { Mail, MapPin, Globe } from "lucide-react";
+import Link from "next/link";
+
+import {
+  Sparkles,
+  Mail,
+  MapPin,
+  ArrowRight,
+} from "lucide-react";
+
+
 
 export default function Footer() {
+
+
   return (
-    <footer className="border-t border-border bg-background">
+
+
+    <footer
+      id="contact"
+      className="border-t bg-gray-50"
+    >
+
+
       <div className="mx-auto max-w-7xl px-6 py-16">
 
-        <div className="grid gap-12 md:grid-cols-4">
+
+
+
+
+        <div className="grid gap-10 md:grid-cols-4">
+
+
+
+
+
 
           {/* Brand */}
-          <div>
-            <h2 className="text-2xl font-bold">
-              Prop<span className="text-blue-600">Intel</span>
-            </h2>
 
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              AI-powered real estate intelligence platform helping buyers make
-              smarter, safer and data-driven property decisions.
-            </p>
-          </div>
 
-          {/* Product */}
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Product</h3>
+          <div className="md:col-span-2">
 
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="cursor-pointer transition hover:text-foreground">
-                Features
-              </li>
-              <li className="cursor-pointer transition hover:text-foreground">
-                How It Works
-              </li>
-              <li className="cursor-pointer transition hover:text-foreground">
-                FAQ
-              </li>
-            </ul>
-          </div>
 
-          {/* Company */}
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Company</h3>
+            <div className="flex items-center gap-3">
 
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="cursor-pointer transition hover:text-foreground">
-                About
-              </li>
-              <li className="cursor-pointer transition hover:text-foreground">
-                Contact
-              </li>
-              <li className="cursor-pointer transition hover:text-foreground">
-                Privacy Policy
-              </li>
-            </ul>
-          </div>
 
-          {/* Contact */}
-          <div>
-            <h3 className="mb-4 text-lg font-semibold">Contact</h3>
+              <div className="rounded-xl bg-blue-600 p-3">
 
-            <div className="space-y-4 text-sm text-muted-foreground">
+                <Sparkles
+                  size={22}
+                  className="text-white"
+                />
 
-              <div className="flex items-center gap-3">
-                <Mail size={18} />
-                <span>contact@propintel.ai</span>
               </div>
 
-              <div className="flex items-center gap-3">
-                <MapPin size={18} />
-                <span>India</span>
-              </div>
 
-              <div className="flex items-center gap-3">
-                <Globe size={18} />
-                <span>www.propintel.ai</span>
-              </div>
+
+
+
+              <h2 className="text-2xl font-bold">
+
+                Prop
+                <span className="text-blue-600">
+                  Intel
+                </span>
+
+                <span className="ml-1">
+                  AI
+                </span>
+
+              </h2>
+
 
             </div>
+
+
+
+
+
+
+            <p className="mt-5 max-w-md leading-relaxed text-gray-500">
+
+
+              AI-powered real estate intelligence platform helping buyers and investors make smarter property decisions with confidence.
+
+
+            </p>
+
+
+
+
+
+
+
+
+            <div className="mt-6 space-y-3 text-sm text-gray-500">
+
+
+              <div className="flex items-center gap-2">
+
+                <Mail size={16}/>
+
+                propintelai2026@gmail.com
+
+              </div>
+
+
+
+
+
+              <div className="flex items-center gap-2">
+
+                <MapPin size={16}/>
+
+                India
+
+              </div>
+
+
+            </div>
+
+
+
           </div>
 
+
+
+
+
+
+
+
+
+          {/* Product */}
+
+
+          <div>
+
+
+            <h3 className="font-bold">
+
+              Product
+
+            </h3>
+
+
+
+
+
+            <ul className="mt-5 space-y-3 text-gray-500">
+
+
+
+              <li>
+
+                <a
+                  href="#features"
+                  className="hover:text-blue-600"
+                >
+
+                  AI Features
+
+                </a>
+
+              </li>
+
+
+
+
+
+              <li>
+
+                <a
+                  href="#how-it-works"
+                  className="hover:text-blue-600"
+                >
+
+                  How It Works
+
+                </a>
+
+              </li>
+
+
+
+
+
+              <li>
+
+                <a
+                  href="#why-us"
+                  className="hover:text-blue-600"
+                >
+
+                  Why PropIntel
+
+                </a>
+
+              </li>
+
+
+
+
+
+              <li>
+
+                <a
+                  href="#founder"
+                  className="hover:text-blue-600"
+                >
+
+                  Meet Founder
+
+                </a>
+
+              </li>
+
+
+
+
+
+              <li>
+
+                <a
+                  href="#vision"
+                  className="hover:text-blue-600"
+                >
+
+                  Our Vision
+
+                </a>
+
+              </li>
+
+
+
+
+
+              <li>
+
+                <a
+                  href="#faq"
+                  className="hover:text-blue-600"
+                >
+
+                  FAQ
+
+                </a>
+
+              </li>
+
+
+
+            </ul>
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+          {/* Company */}
+
+
+          <div>
+
+
+            <h3 className="font-bold">
+
+              Company
+
+            </h3>
+
+
+
+
+
+            <ul className="mt-5 space-y-3 text-gray-500">
+
+
+
+
+
+              <li>
+
+                <Link
+                  href="/login"
+                  className="hover:text-blue-600"
+                >
+
+                  Login
+
+                </Link>
+
+              </li>
+
+
+
+
+
+
+
+              <li>
+
+                <Link
+                  href="/register"
+                  className="hover:text-blue-600"
+                >
+
+                  Create Account
+
+                </Link>
+
+              </li>
+
+
+
+
+
+
+
+              <li>
+
+                <a
+                  href="mailto:propintelai2026@gmail.com"
+                  className="flex items-center gap-2 hover:text-blue-600"
+                >
+
+                  Contact
+
+                  <ArrowRight size={15}/>
+
+                </a>
+
+              </li>
+
+
+
+
+
+            </ul>
+
+
+
+          </div>
+
+
+
+
+
+
         </div>
 
-        <div className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+
+
+
+
+
+
+
+
+        <div className="mt-12 border-t pt-6 text-center text-sm text-gray-500">
+
+
           © {new Date().getFullYear()} PropIntel AI. All rights reserved.
+
+
         </div>
+
+
+
+
+
 
       </div>
+
+
     </footer>
+
+
   );
+
+
 }

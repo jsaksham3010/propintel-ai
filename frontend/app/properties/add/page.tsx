@@ -2,157 +2,341 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+
+import AuthGuard from "@/components/auth/AuthGuard";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+
 import { createProperty } from "@/services/propertyService";
 
 
-export default function AddPropertyPage(){
 
-const router = useRouter();
-
-
-const [form,setForm] = useState({
-
-title:"",
-city:"",
-state:"",
-price:"",
-area:"",
-propertyType:"Apartment"
-
-});
+export default function AddPropertyPage() {
 
 
-const [error,setError]=useState("");
+  const router = useRouter();
 
 
 
-const handleChange=(e:any)=>{
+  const [form,setForm] = useState({
 
-setForm({
-...form,
-[e.target.name]:e.target.value
-});
+    title:"",
+    city:"",
+    state:"",
+    price:"",
+    area:"",
+    propertyType:"Apartment",
 
-};
-
-
-
-const submit=async(e:any)=>{
-
-e.preventDefault();
+  });
 
 
-try{
+
+  const [error,setError] = useState("");
+
+  const [loading,setLoading] = useState(false);
 
 
-await createProperty({
-
-...form,
-
-price:Number(form.price),
-
-area:Number(form.area)
-
-});
 
 
-router.push("/properties");
+  const handleChange = (
+    e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  )=>{
 
 
-}
+    setForm({
 
-catch(err:any){
+      ...form,
 
-setError(
-err.response?.data?.message ||
-"Failed"
-);
+      [e.target.name]:e.target.value,
 
-}
+    });
 
 
-};
+  };
+
+
+
+
+
+
+
+  const submit = async(
+    e:React.FormEvent
+  )=>{
+
+
+    e.preventDefault();
+
+
+
+    setError("");
+
+
+
+
+    if(
+      !form.title ||
+      !form.city ||
+      !form.state ||
+      !form.price ||
+      !form.area
+    ){
+
+      setError(
+        "Please fill all required fields."
+      );
+
+      return;
+
+    }
+
+
+
+
+    try{
+
+
+      setLoading(true);
+
+
+
+      await createProperty({
+
+        title:form.title,
+
+        city:form.city,
+
+        state:form.state,
+
+        price:Number(form.price),
+
+        area:Number(form.area),
+
+        propertyType:
+          form.propertyType as
+          "Apartment" |
+          "Villa" |
+          "Plot" |
+          "Commercial",
+
+      });
+
+
+
+      router.push("/properties");
+
+
+
+    }
+
+    catch(err:any){
+
+
+      console.error(err);
+
+
+      setError(
+
+        err.response?.data?.message ||
+
+        "Failed to create property."
+
+      );
+
+
+    }
+
+    finally{
+
+      setLoading(false);
+
+    }
+
+
+  };
+
+
+
+
 
 
 
 return (
 
-<div className="p-8 bg-gray-50 min-h-screen">
+<AuthGuard>
+
+<DashboardLayout>
 
 
-<div className="max-w-xl mx-auto bg-white p-8 rounded-3xl shadow">
+<div className="min-h-screen bg-gray-50 p-8">
 
 
-<h1 className="text-3xl font-bold mb-6">
-Add Property
+<div className="mx-auto max-w-3xl">
+
+
+<div className="rounded-3xl border bg-white p-8 shadow-sm">
+
+
+<h1 className="text-3xl font-bold text-gray-900">
+
+Add New Property
+
 </h1>
 
 
-{error && (
-<p className="text-red-500 mb-4">
-{error}
+<p className="mt-2 text-gray-500">
+
+Add property details for AI analysis.
+
 </p>
-)}
+
+
+
+
+
+
+{
+error &&
+
+<div className="mt-6 rounded-xl bg-red-50 p-4 text-red-600">
+
+{error}
+
+</div>
+
+}
+
+
+
+
 
 
 
 <form
+
 onSubmit={submit}
-className="space-y-4"
+
+className="mt-8 space-y-5"
+
 >
 
 
+
+
 <input
+
 name="title"
+
 placeholder="Property Title"
-className="w-full border p-3 rounded-xl"
+
+value={form.title}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+
 />
 
 
 
+
+
+
 <input
+
 name="city"
+
 placeholder="City"
-className="w-full border p-3 rounded-xl"
+
+value={form.city}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+
 />
 
 
 
+
+
+
 <input
+
 name="state"
+
 placeholder="State"
-className="w-full border p-3 rounded-xl"
+
+value={form.state}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+
 />
 
 
 
+
+
+
+<div className="grid gap-5 md:grid-cols-2">
+
+
 <input
+
 name="price"
+
 type="number"
-placeholder="Price"
-className="w-full border p-3 rounded-xl"
+
+placeholder="Price (₹)"
+
+value={form.price}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+
 />
+
+
 
 
 
 <input
+
 name="area"
+
 type="number"
-placeholder="Area sq ft"
-className="w-full border p-3 rounded-xl"
+
+placeholder="Area (sq ft)"
+
+value={form.area}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
+
 />
+
+
+</div>
+
+
+
+
 
 
 
 <select
+
 name="propertyType"
-className="w-full border p-3 rounded-xl"
+
+value={form.propertyType}
+
 onChange={handleChange}
+
+className="w-full rounded-xl border p-3"
+
 >
 
 
@@ -160,13 +344,16 @@ onChange={handleChange}
 Apartment
 </option>
 
+
 <option>
 Villa
 </option>
 
+
 <option>
 Plot
 </option>
+
 
 <option>
 Commercial
@@ -178,22 +365,58 @@ Commercial
 
 
 
+
+
+
+
+
 <button
-className="w-full bg-blue-600 text-white p-3 rounded-xl"
+
+disabled={loading}
+
+className="w-full rounded-xl bg-blue-600 p-3 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+
 >
 
-Create Property
+
+{
+loading
+
+?
+
+"Creating Property..."
+
+:
+
+"Create Property"
+
+}
+
 
 </button>
+
+
+
+
 
 
 </form>
 
 
+
+</div>
+
+
+
 </div>
 
 
 </div>
+
+
+</DashboardLayout>
+
+</AuthGuard>
 
 );
 

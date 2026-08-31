@@ -13,176 +13,306 @@ import {
   YAxis,
 } from "recharts";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { getDashboardStats } from "@/services/dashboardService";
 
+import {
+  getDashboardStats,
+} from "@/services/dashboardService";
 
-export default function Charts() {
 
 
-  const [riskData, setRiskData] = useState<any[]>([]);
-  const [typeData, setTypeData] = useState<any[]>([]);
+const COLORS = [
+  "#16a34a",
+  "#f59e0b",
+  "#dc2626",
+];
 
 
-  useEffect(() => {
 
-    const fetchCharts = async () => {
 
-      try {
 
-        const data = await getDashboardStats();
+export default function Charts(){
 
 
-        const risk = data.riskDistribution;
+const [riskData,setRiskData] =
+useState<any[]>([]);
 
 
-        setRiskData([
-          {
-            name: "Low Risk",
-            value: risk.low,
-          },
-          {
-            name: "Medium Risk",
-            value: risk.medium,
-          },
-          {
-            name: "High Risk",
-            value: risk.high,
-          },
-        ]);
+const [typeData,setTypeData] =
+useState<any[]>([]);
 
 
 
-        const types = data.propertyTypes;
 
 
-        setTypeData(
-          Object.keys(types).map((key)=>({
-            name:key,
-            value:types[key],
-          }))
-        );
+useEffect(()=>{
 
 
-      } catch(error){
+const fetchCharts = async()=>{
 
-        console.error(
-          "Chart Error",
-          error
-        );
 
-      }
+try{
 
-    };
 
+const data =
+await getDashboardStats();
 
-    fetchCharts();
 
 
-  },[]);
+setRiskData([
 
+{
+name:"Low Risk",
+value:data.riskDistribution.low,
+},
 
+{
+name:"Medium Risk",
+value:data.riskDistribution.medium,
+},
 
-  return (
+{
+name:"High Risk",
+value:data.riskDistribution.high,
+},
 
-    <div className="mt-10 grid gap-6 lg:grid-cols-2">
+]);
 
 
-      {/* Risk Distribution */}
 
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
 
-        <h2 className="mb-6 text-xl font-bold">
-          AI Risk Distribution
-        </h2>
 
+setTypeData(
 
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-        >
+Object.keys(
+data.propertyTypes
+).map((key)=>({
 
-          <PieChart>
+name:key,
 
-            <Pie
-              data={riskData}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={100}
-              label
-            >
+value:data.propertyTypes[key],
 
-              {riskData.map(
-                (entry,index)=>(
-                  <Cell key={index}/>
-                )
-              )}
+}))
 
-            </Pie>
+);
 
 
-            <Tooltip />
 
-            <Legend />
+}
 
-          </PieChart>
+catch(err){
 
+console.error(
+"Chart Error",
+err
+);
 
-        </ResponsiveContainer>
+}
 
 
-      </div>
+};
 
 
+fetchCharts();
 
 
+},[]);
 
-      {/* Property Types */}
 
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
 
 
-        <h2 className="mb-6 text-xl font-bold">
-          Property Types
-        </h2>
 
 
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-        >
+return(
 
-          <BarChart data={typeData}>
 
+<div className="grid gap-6 lg:grid-cols-2">
 
-            <XAxis dataKey="name"/>
 
-            <YAxis/>
 
-            <Tooltip/>
 
-            <Legend/>
 
+{/* Risk */}
 
-            <Bar
-              dataKey="value"
-              radius={[8,8,0,0]}
-            />
+<div className="rounded-3xl border bg-white p-6 shadow-sm">
 
 
-          </BarChart>
+<h2 className="mb-6 text-xl font-bold text-gray-900">
 
+AI Risk Distribution
 
-        </ResponsiveContainer>
+</h2>
 
 
-      </div>
 
 
 
-    </div>
+<ResponsiveContainer
 
-  );
+width="100%"
+
+height={300}
+
+>
+
+
+<PieChart>
+
+
+<Pie
+
+data={riskData}
+
+dataKey="value"
+
+nameKey="name"
+
+outerRadius={100}
+
+label
+
+>
+
+
+{
+riskData.map(
+
+(entry,index)=>(
+
+
+<Cell
+
+key={index}
+
+fill={
+COLORS[index]
+}
+
+/>
+
+
+)
+
+)
+
+}
+
+
+</Pie>
+
+
+
+<Tooltip/>
+
+
+<Legend/>
+
+
+</PieChart>
+
+
+</ResponsiveContainer>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Property Types */}
+
+<div className="rounded-3xl border bg-white p-6 shadow-sm">
+
+
+<h2 className="mb-6 text-xl font-bold text-gray-900">
+
+Property Types
+
+</h2>
+
+
+
+
+
+<ResponsiveContainer
+
+width="100%"
+
+height={300}
+
+>
+
+
+<BarChart
+
+data={typeData}
+
+>
+
+
+<XAxis
+
+dataKey="name"
+
+/>
+
+
+<YAxis/>
+
+
+<Tooltip/>
+
+
+<Legend/>
+
+
+
+
+
+<Bar
+
+dataKey="value"
+
+fill="#2563eb"
+
+radius={[
+10,
+10,
+0,
+0
+]}
+
+/>
+
+
+
+</BarChart>
+
+
+</ResponsiveContainer>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+);
+
 
 }

@@ -1,88 +1,469 @@
 "use client";
 
 import { useState } from "react";
+
 import Link from "next/link";
-import { ArrowRight, PlayCircle } from "lucide-react";
+
+import {
+  ArrowRight,
+  PlayCircle,
+  Sparkles,
+  ShieldCheck,
+  TrendingUp,
+} from "lucide-react";
+
 import DemoModal from "@/components/common/DemoModal";
 
+
+
 export default function Hero() {
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
 
-  return (
-    <>
-      <section className="relative overflow-hidden">
-        {/* Background Blur */}
-        <div className="absolute left-1/2 top-0 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[120px]" />
 
-        <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl flex-col items-center justify-center px-6 text-center">
-          {/* Badge */}
-          <span className="mb-6 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-600">
-            🚀 AI-Powered Real Estate Intelligence
-          </span>
+const [isDemoOpen,setIsDemoOpen] =
+useState(false);
 
-          {/* Heading */}
-          <h1 className="max-w-5xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
-            Know Everything
-            <br />
-            <span className="text-blue-600">Before You Buy.</span>
-          </h1>
 
-          {/* Description */}
-          <p className="mt-8 max-w-2xl text-lg text-muted-foreground">
-            Make smarter real estate decisions with AI-powered property
-            analysis, legal verification, investment insights and intelligent
-            recommendations—all in one place.
-          </p>
 
-          {/* Buttons */}
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Link
-              href="/register"
-              className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-7 py-3 font-medium text-white transition hover:bg-blue-700"
-            >
-              Get Started
-              <ArrowRight size={18} />
-            </Link>
+return (
 
-            <button
-              onClick={() => setIsDemoOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl border border-border px-7 py-3 font-medium transition hover:bg-accent"
-            >
-              <PlayCircle size={18} />
-              Watch Demo
-            </button>
-          </div>
+<>
 
-          {/* Stats */}
-          <div className="mt-20 grid w-full max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="rounded-2xl border bg-card p-6 shadow-sm">
-              <h2 className="text-3xl font-bold">10K+</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Properties Analyzed
-              </p>
-            </div>
 
-            <div className="rounded-2xl border bg-card p-6 shadow-sm">
-              <h2 className="text-3xl font-bold">95%</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                AI Prediction Accuracy
-              </p>
-            </div>
+<section className="relative overflow-hidden">
 
-            <div className="rounded-2xl border bg-card p-6 shadow-sm">
-              <h2 className="text-3xl font-bold">24/7</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                AI Assistant Support
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <DemoModal
-        open={isDemoOpen}
-        onOpenChange={setIsDemoOpen}
-      />
-    </>
-  );
+<div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-blue-500/20 blur-[140px]" />
+
+
+
+
+
+<div className="mx-auto grid min-h-[calc(100vh-80px)] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2">
+
+
+
+
+
+{/* LEFT */}
+
+
+<div>
+
+
+<div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600">
+
+<Sparkles size={16}/>
+
+AI Powered Real Estate Intelligence
+
+</div>
+
+
+
+
+
+
+
+<h1 className="mt-8 text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
+
+
+Make Smarter
+
+<br/>
+
+
+<span className="text-blue-600">
+
+Property Decisions
+
+</span>
+
+
+<br/>
+
+
+With AI
+
+
+</h1>
+
+
+
+
+
+
+
+<p className="mt-6 max-w-xl text-lg text-gray-600">
+
+
+Analyze properties, detect risks, estimate investment potential and get AI-powered recommendations before making your biggest real estate decision.
+
+
+</p>
+
+
+
+
+
+
+
+
+
+<div className="mt-10 flex flex-col gap-4 sm:flex-row">
+
+
+<Link
+
+href="/register"
+
+className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white shadow-xl shadow-blue-600/20 hover:bg-blue-700"
+
+>
+
+Start Free Analysis
+
+<ArrowRight size={18}/>
+
+</Link>
+
+
+
+
+
+
+
+<button
+
+onClick={()=>setIsDemoOpen(true)}
+
+className="flex items-center justify-center gap-2 rounded-xl border px-8 py-4 font-semibold hover:bg-gray-50"
+
+>
+
+
+<PlayCircle size={18}/>
+
+Watch Demo
+
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="mt-12 grid grid-cols-3 gap-4">
+
+
+<div>
+
+<h3 className="text-3xl font-bold">
+
+10K+
+
+</h3>
+
+<p className="text-sm text-gray-500">
+
+Properties Analysed
+
+</p>
+
+</div>
+
+
+
+<div>
+
+<h3 className="text-3xl font-bold">
+
+95%
+
+</h3>
+
+<p className="text-sm text-gray-500">
+
+AI Accuracy
+
+</p>
+
+</div>
+
+
+
+
+<div>
+
+<h3 className="text-3xl font-bold">
+
+24/7
+
+</h3>
+
+<p className="text-sm text-gray-500">
+
+AI Support
+
+</p>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* RIGHT AI CARD */}
+
+
+<div className="relative">
+
+
+<div className="rounded-3xl border bg-white p-8 shadow-2xl">
+
+
+<div className="flex items-center justify-between">
+
+
+<div className="flex items-center gap-3">
+
+
+<div className="rounded-xl bg-blue-600 p-3">
+
+<Sparkles
+className="text-white"
+/>
+
+</div>
+
+
+<div>
+
+<h3 className="font-bold">
+
+AI Property Report
+
+</h3>
+
+<p className="text-sm text-gray-500">
+
+Generated by Gemini AI
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+<span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+
+LIVE
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="mt-8 rounded-2xl bg-blue-50 p-6">
+
+
+<p className="text-sm text-gray-500">
+
+Investment Score
+
+</p>
+
+
+<h2 className="mt-2 text-6xl font-extrabold text-blue-600">
+
+92
+
+<span className="text-3xl">
+
+/100
+
+</span>
+
+</h2>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="mt-6 space-y-4">
+
+
+<div className="flex items-center justify-between rounded-xl border p-4">
+
+
+<div className="flex items-center gap-3">
+
+
+<TrendingUp className="text-green-600"/>
+
+
+<span>
+
+Investment Potential
+
+</span>
+
+
+</div>
+
+
+<b className="text-green-600">
+
+Excellent
+
+</b>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="flex items-center justify-between rounded-xl border p-4">
+
+
+<div className="flex items-center gap-3">
+
+
+<ShieldCheck className="text-blue-600"/>
+
+
+<span>
+
+Risk Level
+
+</span>
+
+
+</div>
+
+
+<b className="text-green-600">
+
+Low
+
+</b>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="rounded-xl bg-gray-50 p-4">
+
+
+<p className="text-sm text-gray-500">
+
+AI Recommendation
+
+</p>
+
+
+<p className="mt-1 font-bold">
+
+Strong Buy — High Growth Potential
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+<div className="absolute -bottom-5 -left-5 rounded-2xl bg-blue-600 px-5 py-3 text-white shadow-xl">
+
+
+🤖 AI Analysis Complete
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<DemoModal
+
+open={isDemoOpen}
+
+onOpenChange={setIsDemoOpen}
+
+/>
+
+
+
+</>
+
+
+);
+
 }

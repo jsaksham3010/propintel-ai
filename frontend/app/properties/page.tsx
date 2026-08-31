@@ -2,352 +2,575 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+
 import AuthGuard from "@/components/auth/AuthGuard";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PropertyFilters from "@/components/property/PropertyFilters";
-import { getProperties } from "@/services/propertyService";
-import { Loader2 } from "lucide-react";
+
+import {
+  getProperties,
+} from "@/services/propertyService";
+
+
+import {
+  Loader2,
+  Sparkles,
+  Pencil,
+  MapPin,
+} from "lucide-react";
+
+
+
 
 
 interface Property {
-  _id: string;
-  title: string;
-  city: string;
-  state: string;
-  price: number;
-  propertyType: string;
-  area: number;
-  images?: {
-    url: string;
+
+  _id:string;
+
+  title:string;
+
+  city:string;
+
+  state:string;
+
+  price:number;
+
+  propertyType:string;
+
+  area:number;
+
+  images?:{
+    url:string;
   }[];
-}
 
+  aiReport?:{
 
-export default function PropertiesPage() {
+    overallScore?:number;
 
-
-  const [properties, setProperties] = useState<Property[]>([]);
-
-  const [loading, setLoading] = useState(true);
-
-  const [error, setError] = useState("");
-
-  const [filters, setFilters] = useState({});
-
-
-
-  const fetchProperties = async (
-    currentFilters = filters
-  ) => {
-
-    try {
-
-      setLoading(true);
-
-      setError("");
-
-      const data = await getProperties(
-        currentFilters
-      );
-
-
-      setProperties(
-        data.properties || []
-      );
-
-
-    } catch (err) {
-
-      console.error(err);
-
-      setError(
-        "Failed to load properties."
-      );
-
-    } finally {
-
-      setLoading(false);
-
-    }
+    riskLevel?:string;
 
   };
 
+}
 
 
-  useEffect(() => {
 
-    fetchProperties();
 
-  }, []);
+type Filters = Record<string,string>;
 
 
 
 
-  return (
 
-    <AuthGuard>
 
-      <DashboardLayout>
 
+export default function PropertiesPage(){
 
-        <div className="p-8">
 
 
-          {/* Header */}
+const [properties,setProperties] =
+useState<Property[]>([]);
 
-          <div className="flex items-center justify-between mb-8">
 
+const [loading,setLoading] =
+useState(true);
 
-            <div>
 
-              <h1 className="text-3xl font-bold text-gray-900">
-                My Properties
-              </h1>
+const [error,setError] =
+useState("");
 
 
-              <p className="text-gray-500 mt-2">
-                Manage and analyze your listed properties.
-              </p>
 
+const [filters,setFilters] =
+useState<Filters>({});
 
-            </div>
 
 
 
-            <Link
-              href="/dashboard/properties/add"
-              className="rounded-xl bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 transition"
-            >
 
-              + Add Property
 
-            </Link>
 
+const fetchProperties = async(
 
-          </div>
+currentFilters:Filters={}
 
+)=>{
 
 
+try{
 
 
-          {/* Filters */}
+setLoading(true);
 
-          <PropertyFilters
+setError("");
 
-            onFilterChange={(newFilters)=>{
 
-              setFilters(newFilters);
 
-              fetchProperties(newFilters);
+const data =
+await getProperties(
+currentFilters
+);
 
-            }}
 
-          />
 
+setProperties(
+data.properties || []
+);
 
 
 
+}
 
-          {/* Loading */}
+catch(err){
 
-          {loading && (
 
-            <div className="flex justify-center items-center h-80">
+console.error(err);
 
-              <Loader2
-                size={40}
-                className="animate-spin text-blue-600"
-              />
 
-            </div>
+setError(
+"Failed to load properties."
+);
 
-          )}
 
 
+}
 
+finally{
 
 
+setLoading(false);
 
-          {/* Error */}
 
-          {!loading && error && (
+}
 
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4 text-red-600">
 
-              {error}
+};
 
-            </div>
 
-          )}
 
 
 
 
 
+useEffect(()=>{
 
-          {/* Empty */}
 
-          {!loading &&
-          !error &&
-          properties.length === 0 && (
+fetchProperties();
 
-            <div className="mt-8 bg-white rounded-2xl shadow-sm border p-16 text-center">
 
+},[]);
 
-              <h2 className="text-2xl font-semibold">
 
-                No Properties Found
 
-              </h2>
 
 
-              <p className="text-gray-500 mt-3">
 
-                Try changing filters or add a new property.
 
-              </p>
 
 
 
-            </div>
+return(
 
-          )}
 
+<AuthGuard>
 
+<DashboardLayout>
 
 
 
+<div className="p-8">
 
-          {/* Cards */}
 
-          {!loading &&
-          !error &&
-          properties.length > 0 && (
 
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
 
 
-              {properties.map((property)=>(
+<div className="mb-8 flex items-center justify-between">
 
 
-                <div
+<div>
 
-                  key={property._id}
+<h1 className="text-3xl font-bold">
 
-                  className="overflow-hidden rounded-2xl border bg-white shadow-sm hover:shadow-xl transition"
+My Properties
 
-                >
+</h1>
 
 
+<p className="mt-2 text-gray-500">
 
-                  <img
+Manage your real estate portfolio
 
-                    src={
-                      property.images?.[0]?.url ||
-                      "/placeholder-property.jpg"
-                    }
+</p>
 
-                    alt={property.title}
 
-                    className="h-52 w-full object-cover"
+</div>
 
-                  />
 
 
 
 
+<Link
 
-                  <div className="p-5">
+href="/properties/add"
 
+className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-blue-700"
 
-                    <h2 className="text-xl font-bold text-gray-900">
+>
 
-                      {property.title}
++ Add Property
 
-                    </h2>
+</Link>
 
 
+</div>
 
 
-                    <p className="mt-2 text-gray-500">
 
-                      📍 {property.city}, {property.state}
 
-                    </p>
 
 
 
+<PropertyFilters
 
-                    <p className="mt-4 text-2xl font-bold text-blue-600">
+onFilterChange={(newFilters)=>{
 
-                      ₹ {property.price.toLocaleString("en-IN")}
 
-                    </p>
+setFilters(newFilters);
 
 
+fetchProperties(newFilters);
 
 
+}}
 
-                    <div className="flex gap-3 mt-3">
+/>
 
 
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600">
 
-                        {property.propertyType}
 
-                      </span>
 
 
 
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600">
 
-                        {property.area} sq.ft
 
-                      </span>
+{
+loading &&
 
+<div className="flex h-80 items-center justify-center">
 
-                    </div>
+<Loader2
 
+size={40}
 
+className="animate-spin text-blue-600"
 
+/>
 
+</div>
 
-                    <Link
+}
 
-                      href={`/dashboard/properties/${property._id}`}
 
-                      className="mt-5 inline-block text-blue-600 font-semibold hover:underline"
 
-                    >
 
-                      View Details →
 
-                    </Link>
 
 
 
-                  </div>
+{
+error &&
 
+<div className="mt-6 rounded-xl bg-red-50 p-4 text-red-600">
 
-                </div>
+{error}
 
+</div>
 
-              ))}
+}
 
 
-            </div>
 
-          )}
 
 
 
-        </div>
 
 
-      </DashboardLayout>
 
-    </AuthGuard>
+{
+!loading &&
+!error &&
+properties.length===0 &&
 
-  );
+<div className="mt-8 rounded-2xl border bg-white p-16 text-center">
+
+<h2 className="text-2xl font-bold">
+
+No Properties Found
+
+</h2>
+
+
+</div>
+
+}
+
+
+
+
+
+
+
+
+{
+!loading &&
+!error &&
+properties.length>0 &&
+
+
+
+<div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+
+
+{
+
+properties.map((property)=>(
+
+
+<div
+
+key={property._id}
+
+className="overflow-hidden rounded-3xl border bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+
+>
+
+
+
+
+
+<div className="relative">
+
+
+<img
+
+src={
+
+property.images?.[0]?.url ||
+
+"/placeholder-property.jpg"
+
+}
+
+alt={property.title}
+
+className="h-56 w-full object-cover"
+
+/>
+
+
+
+
+
+
+{
+property.aiReport &&
+
+
+<div className="absolute left-4 top-4 flex gap-2">
+
+
+<span className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-sm font-semibold text-blue-600 shadow">
+
+
+<Sparkles size={14}/>
+
+{property.aiReport.overallScore || 0}/100
+
+
+</span>
+
+
+
+
+
+<span className={`rounded-full bg-white px-3 py-1 text-sm font-semibold shadow ${
+property.aiReport.riskLevel?.toLowerCase()==="low"
+
+?
+
+"text-green-600"
+
+:
+
+"text-red-600"
+
+}`}>
+
+{property.aiReport.riskLevel}
+
+</span>
+
+
+
+</div>
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="p-6">
+
+
+
+<h2 className="text-xl font-bold">
+
+{property.title}
+
+</h2>
+
+
+
+
+
+<div className="mt-2 flex items-center gap-2 text-gray-500">
+
+
+<MapPin size={16}/>
+
+
+{property.city}, {property.state}
+
+
+</div>
+
+
+
+
+
+
+
+<p className="mt-4 text-2xl font-bold text-blue-600">
+
+₹ {property.price.toLocaleString("en-IN")}
+
+</p>
+
+
+
+
+
+
+
+
+<div className="mt-4 flex gap-2">
+
+
+<span className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600">
+
+{property.propertyType}
+
+</span>
+
+
+
+<span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+
+{property.area} sq.ft
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="mt-6 flex items-center justify-between">
+
+
+<Link
+
+href={`/properties/${property._id}`}
+
+className="font-semibold text-blue-600"
+
+>
+
+View Details →
+
+</Link>
+
+
+
+
+<Link
+
+href={`/properties/edit/${property._id}`}
+
+className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
+
+>
+
+<Pencil size={16}/>
+
+Edit
+
+</Link>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+))
+
+
+}
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+</div>
+
+
+
+</DashboardLayout>
+
+</AuthGuard>
+
+
+);
+
 
 }

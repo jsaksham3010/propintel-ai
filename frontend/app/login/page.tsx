@@ -27,6 +27,7 @@ export default function LoginPage() {
       setLoading(true);
       setError("");
 
+
       const response = await api.post(
         "/auth/login",
         {
@@ -36,7 +37,26 @@ export default function LoginPage() {
       );
 
 
+      console.log(
+        "LOGIN RESPONSE:",
+        response.data
+      );
+
+
       const { token, user } = response.data;
+
+
+      console.log(
+        "TOKEN RECEIVED:",
+        token
+      );
+
+
+      if (!token) {
+        throw new Error(
+          "Token not received from server"
+        );
+      }
 
 
       localStorage.setItem(
@@ -44,9 +64,16 @@ export default function LoginPage() {
         token
       );
 
+
       localStorage.setItem(
         "user",
         JSON.stringify(user)
+      );
+
+
+      console.log(
+        "TOKEN SAVED:",
+        localStorage.getItem("token")
       );
 
 
@@ -55,16 +82,25 @@ export default function LoginPage() {
 
     } catch (err: any) {
 
+      console.error(
+        "LOGIN ERROR:",
+        err
+      );
+
+
       setError(
         err.response?.data?.message ||
+        err.message ||
         "Login failed"
       );
+
 
     } finally {
 
       setLoading(false);
 
     }
+
   };
 
 
@@ -73,12 +109,6 @@ export default function LoginPage() {
   const handleGoogleLogin = async (
     credentialResponse: any
   ) => {
-
-    console.log(
-      "GOOGLE RESPONSE:",
-      credentialResponse
-    );
-
 
     try {
 
@@ -93,15 +123,9 @@ export default function LoginPage() {
       );
 
 
-      console.log(
-        "BACKEND RESPONSE:",
-        response.data
-      );
-
-
       const {
         token,
-        user
+        user,
       } = response.data;
 
 
@@ -122,7 +146,7 @@ export default function LoginPage() {
 
     } catch (err: any) {
 
-      console.log(
+      console.error(
         "GOOGLE LOGIN ERROR:",
         err
       );
@@ -134,6 +158,7 @@ export default function LoginPage() {
       );
 
     }
+
   };
 
 
@@ -164,29 +189,22 @@ export default function LoginPage() {
         {error && (
 
           <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-600">
-
             {error}
-
           </div>
 
         )}
 
 
 
-        {/* Google Login */}
-
         <div className="flex justify-center mb-5">
 
           <GoogleLogin
-
             onSuccess={handleGoogleLogin}
-
             onError={() =>
               setError(
                 "Google Login Failed"
               )
             }
-
           />
 
         </div>
@@ -207,7 +225,6 @@ export default function LoginPage() {
 
 
 
-
         <form
           onSubmit={handleLogin}
           className="space-y-5"
@@ -222,25 +239,17 @@ export default function LoginPage() {
 
 
             <input
-
               type="email"
-
               value={email}
-
               onChange={(e)=>
                 setEmail(e.target.value)
               }
-
               placeholder="saksham@example.com"
-
-              className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-blue-600"
-
+              className="mt-2 w-full rounded-xl border px-4 py-3 outline-none focus:border-blue-600"
               required
-
             />
 
           </div>
-
 
 
 
@@ -252,44 +261,30 @@ export default function LoginPage() {
 
 
             <input
-
               type="password"
-
               value={password}
-
               onChange={(e)=>
                 setPassword(e.target.value)
               }
-
               placeholder="••••••••"
-
-              className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-blue-600"
-
+              className="mt-2 w-full rounded-xl border px-4 py-3 outline-none focus:border-blue-600"
               required
-
             />
 
           </div>
 
 
 
-
-
           <button
-
             disabled={loading}
-
             className="w-full rounded-xl bg-blue-600 py-3 text-white font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
-
           >
 
             {loading && (
-
               <Loader2
                 className="animate-spin"
                 size={18}
               />
-
             )}
 
             Login
@@ -297,34 +292,22 @@ export default function LoginPage() {
           </button>
 
 
-
         </form>
-
-
 
 
 
         <p className="mt-6 text-center text-sm text-gray-500">
 
-
           Don't have an account?{" "}
 
-
           <Link
-
             href="/register"
-
             className="text-blue-600 font-medium"
-
           >
-
             Register
-
           </Link>
 
-
         </p>
-
 
 
       </div>

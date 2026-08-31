@@ -1,77 +1,230 @@
-import { Brain, ShieldCheck, Zap, Globe } from "lucide-react";
+import {
+  Globe2,
+  Lightbulb,
+  Rocket,
+  Users,
+} from "lucide-react";
+
+
 
 const visionPoints = [
-  {
-    icon: Brain,
-    title: "AI First",
-    description:
-      "Artificial Intelligence at the core of every property decision.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Trusted & Secure",
-    description:
-      "Your documents and data remain private, secure and protected.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Decisions",
-    description:
-      "Analyze properties in minutes instead of days of manual research.",
-  },
-  {
-    icon: Globe,
-    title: "Accessible for Everyone",
-    description:
-      "Making smart real estate decisions simple for every buyer and investor.",
-  },
+
+{
+icon:Globe2,
+title:"Transform Real Estate Decisions",
+description:
+"Our vision is to make property intelligence accessible to every buyer and investor.",
+},
+
+
+{
+icon:Lightbulb,
+title:"Data Before Decisions",
+description:
+"We believe every property decision should be backed by insights instead of assumptions.",
+},
+
+
+{
+icon:Rocket,
+title:"Future Of Property Investing",
+description:
+"Building the next generation AI platform for smarter real estate experiences.",
+},
+
+
+{
+icon:Users,
+title:"For Everyone",
+description:
+"Helping individuals, investors and professionals make confident choices.",
+},
+
+
 ];
 
-export default function OurVision() {
-  return (
-    <section id="vision"className="scroll-mt-24 py-24">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-600">
-            Our Vision
-          </span>
 
-          <h2 className="mt-6 text-4xl font-bold md:text-5xl">
-            Building the Future of
-            <span className="text-blue-600"> Real Estate Intelligence</span>
-          </h2>
 
-          <p className="mt-6 text-lg text-muted-foreground">
-            We believe buying a property should be driven by data, transparency
-            and intelligent insights—not uncertainty. PropIntel AI empowers
-            buyers with AI-powered analysis to make confident real estate
-            decisions.
-          </p>
-        </div>
 
-        <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {visionPoints.map((item) => {
-            const Icon = item.icon;
 
-            return (
-              <div
-                key={item.title}
-                className="rounded-2xl border bg-card p-8 transition hover:-translate-y-2 hover:shadow-lg"
-              >
-                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600/10">
-                  <Icon className="text-blue-600" />
-                </div>
+export default function OurVision(){
 
-                <h3 className="text-xl font-semibold">{item.title}</h3>
 
-                <p className="mt-3 text-muted-foreground">
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+return(
+
+
+<section
+id="vision"
+className="scroll-mt-24 bg-gray-50 py-24"
+>
+
+
+<div className="mx-auto max-w-7xl px-6">
+
+
+
+
+
+<div className="mx-auto max-w-3xl text-center">
+
+
+<span className="rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600">
+
+Our Vision
+
+</span>
+
+
+
+
+<h2 className="mt-6 text-4xl font-bold md:text-5xl">
+
+
+Building The Future Of
+
+<br/>
+
+AI Powered Real Estate
+
+
+</h2>
+
+
+
+
+<p className="mt-5 text-lg text-gray-500">
+
+
+PropIntel AI aims to redefine how people discover, analyze and invest in properties by combining artificial intelligence with real estate intelligence.
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+
+
+
+{
+visionPoints.map((item)=>{
+
+
+const Icon=item.icon;
+
+
+return(
+
+
+<div
+
+key={item.title}
+
+className="rounded-3xl border bg-white p-7 shadow-sm transition hover:-translate-y-2 hover:shadow-xl"
+
+>
+
+
+<div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600">
+
+
+<Icon
+
+size={26}
+
+className="text-white"
+
+/>
+
+
+</div>
+
+
+
+
+
+<h3 className="mt-6 text-xl font-bold">
+
+{item.title}
+
+</h3>
+
+
+
+
+<p className="mt-3 text-sm leading-relaxed text-gray-500">
+
+{item.description}
+
+</p>
+
+
+
+
+</div>
+
+
+);
+
+
+})
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="mt-16 rounded-3xl bg-white border p-10 text-center shadow-sm">
+
+
+<h3 className="text-3xl font-bold">
+
+The Future Is Intelligent
+
+</h3>
+
+
+
+<p className="mx-auto mt-4 max-w-2xl text-gray-500">
+
+
+From property discovery to investment analysis, PropIntel AI is creating a smarter ecosystem where every decision is powered by intelligence.
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</section>
+
+
+);
+
+
 }
