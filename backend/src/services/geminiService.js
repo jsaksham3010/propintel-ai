@@ -1,16 +1,23 @@
 const { GoogleGenAI } = require("@google/genai");
 
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+
+
 async function analyzePropertyImages(imageUrls) {
+
+
   const prompt = `
 You are an expert real estate property inspector.
 
-Analyze the uploaded property images carefully.
+Analyze the property images carefully.
 
-Return ONLY valid JSON in this exact format:
+Return ONLY valid JSON.
+
+Format:
 
 {
   "overallScore": 0,
@@ -27,26 +34,89 @@ Return ONLY valid JSON in this exact format:
 }
 `;
 
-  const contents = [
-    {
-      text: prompt,
-    },
-    ...imageUrls.map((url) => ({
-      fileData: {
-        fileUri: url,
-      },
-    })),
-  ];
 
-  const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
-    contents,
+
+  const imageParts = await Promise.all(
+
+    imageUrls.map(async (url) => {
+
+
+      const response = await fetch(url);
+
+
+      const buffer = await response.arrayBuffer();
+
+
+      const base64 = Buffer
+        .from(buffer)
+        .toString("base64");
+
+
+
+      const mimeType =
+        response.headers.get("content-type")
+        || "image/jpeg";
+
+
+
+      return {
+
+        inlineData: {
+
+          data: base64,
+
+          mimeType,
+
+        },
+
+      };
+
+
+    })
+
+  );
+
+
+
+
+  const result = await ai.models.generateContent({
+
+    model: "gemini-3.6-flash",
+
+    contents: [
+
+      {
+
+        role: "user",
+
+        parts: [
+
+          {
+            text: prompt
+          },
+
+          ...imageParts,
+
+        ],
+
+      },
+
+    ],
+
   });
 
-  return response.text;
+
+
+  return result.text;
+
 }
 
+
+
 module.exports = {
+
   ai,
+
   analyzePropertyImages,
+
 };

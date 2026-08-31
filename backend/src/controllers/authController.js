@@ -507,13 +507,11 @@ exports.getCurrentUser = async (req, res) => {
 
 
 
-    return res.status(200).json({
-
-      success:true,
-
-      user,
-
-    });
+  return res.status(200).json({
+  success: true,
+  message: "Authenticated successfully",
+  user,
+});
 
 
 
