@@ -1,4 +1,5 @@
 const Property = require("../models/Property");
+const User = require("../models/User");
 
 
 // ======================================
@@ -8,12 +9,33 @@ exports.getDashboardStats = async (req, res) => {
 
   try {
 
-    const userId = req.user.id;
+
+    let properties;
 
 
-    const properties = await Property.find({
-      owner: userId,
-    }).lean();
+
+    // ==========================
+    // Role Based Property Access
+    // ==========================
+
+    if (req.user.role === "admin") {
+
+      properties = await Property.find().lean();
+
+    } 
+    
+    else {
+
+      properties = await Property.find({
+
+        owner: req.user.id,
+
+      }).lean();
+
+    }
+
+
+
 
 
 
@@ -21,15 +43,82 @@ exports.getDashboardStats = async (req, res) => {
 
 
 
+
+
+    // ==========================
+    // User Statistics
+    // ==========================
+
+    let totalUsers = 0;
+
+    let totalBuilders = 0;
+
+    let totalBuyers = 0;
+
+    let totalAdmins = 0;
+
+
+
+    if(req.user.role === "admin"){
+
+
+      totalUsers = await User.countDocuments();
+
+
+      totalBuilders = await User.countDocuments({
+
+        role:"builder"
+
+      });
+
+
+      totalBuyers = await User.countDocuments({
+
+        role:"buyer"
+
+      });
+
+
+      totalAdmins = await User.countDocuments({
+
+        role:"admin"
+
+      });
+
+
+    }
+
+
+
+
+
+
+
+
+    // ==========================
+    // AI Analyzed Properties
+    // ==========================
+
     const analyzedProperties = properties.filter(
+
       (property) =>
+
         property.aiReport &&
+
         property.aiReport.overallScore !== undefined
+
     );
 
 
 
+
+
     const aiReports = analyzedProperties.length;
+
+
+
+
+
 
 
 
@@ -38,24 +127,51 @@ exports.getDashboardStats = async (req, res) => {
     // ==========================
 
     const scores = analyzedProperties
+
       .map(
-        (property) =>
+
+        (property)=>
+
           property.aiReport?.overallScore
+
       )
+
       .filter(
-        (score) =>
+
+        (score)=>
+
           typeof score === "number"
+
       );
 
 
+
+
+
     const averageScore = scores.length
+
       ? Math.round(
+
           scores.reduce(
-            (sum, score) => sum + score,
+
+            (sum,score)=>sum+score,
+
             0
-          ) / scores.length
+
+          )
+
+          /
+
+          scores.length
+
         )
-      : 0;
+
+      :0;
+
+
+
+
+
 
 
 
@@ -64,39 +180,76 @@ exports.getDashboardStats = async (req, res) => {
     // Risk Distribution
     // ==========================
 
+
     const riskDistribution = {
 
-      low: 0,
-      medium: 0,
-      high: 0,
+
+      low:0,
+
+      medium:0,
+
+      high:0,
+
 
     };
 
 
 
+
+
     analyzedProperties.forEach(
+
       (property)=>{
 
 
         const risk =
-          property.aiReport?.riskLevel
-          ?.toLowerCase();
+
+          property.aiReport?.riskAnalysis?.riskLevel ||
+
+          property.aiReport?.riskLevel ||
+
+          "";
 
 
 
-        if(risk==="low")
+        const normalizedRisk =
+
+          risk.toLowerCase();
+
+
+
+
+
+        if(normalizedRisk.includes("low")){
+
+
           riskDistribution.low++;
 
 
-        else if(risk==="medium")
+        }
+
+
+        else if(normalizedRisk.includes("medium")){
+
+
           riskDistribution.medium++;
 
 
-        else if(risk==="high")
+        }
+
+
+        else if(normalizedRisk.includes("high")){
+
+
           riskDistribution.high++;
 
 
+        }
+
+
+
       }
+
     );
 
 
@@ -104,29 +257,51 @@ exports.getDashboardStats = async (req, res) => {
 
 
 
+
+
+
     // ==========================
-    // Risk Based Distribution
+    // Investment Distribution
     // ==========================
+
 
     const investmentDistribution = {};
 
 
 
+
+
     analyzedProperties.forEach(
+
       (property)=>{
 
 
         const rating =
-          property.aiReport?.riskLevel ||
+
+          property.aiReport?.investmentAnalysis?.investmentRating ||
+
           "Unknown";
 
 
+
+
+
         investmentDistribution[rating] =
-          (investmentDistribution[rating] || 0) + 1;
+
+          (
+
+            investmentDistribution[rating] || 0
+
+          ) + 1;
+
 
 
       }
+
     );
+
+
+
 
 
 
@@ -137,25 +312,43 @@ exports.getDashboardStats = async (req, res) => {
     // Property Type Distribution
     // ==========================
 
+
     const propertyTypes = {};
 
 
 
+
+
     properties.forEach(
+
       (property)=>{
 
 
         const type =
+
           property.propertyType ||
+
           "Unknown";
 
 
+
+
+
         propertyTypes[type] =
-          (propertyTypes[type] || 0) + 1;
+
+          (
+
+            propertyTypes[type] || 0
+
+          ) + 1;
+
 
 
       }
+
     );
+
+
 
 
 
@@ -167,12 +360,19 @@ exports.getDashboardStats = async (req, res) => {
     // Recent AI Reports
     // ==========================
 
+
     const recentReports = analyzedProperties
 
       .sort(
+
         (a,b)=>
-          new Date(b.analyzedAt || 0) -
+
+          new Date(b.analyzedAt || 0)
+
+          -
+
           new Date(a.analyzedAt || 0)
+
       )
 
 
@@ -180,38 +380,54 @@ exports.getDashboardStats = async (req, res) => {
 
 
       .map(
+
         (property)=>({
 
 
-          id: property._id,
+          id:property._id,
 
 
-          title:
-            property.title,
+          title:property.title,
 
 
-          city:
-            property.city,
+          city:property.city,
+
 
 
           overallScore:
+
             property.aiReport?.overallScore || 0,
 
 
+
           riskLevel:
-            property.aiReport?.riskLevel || "Unknown",
+
+            property.aiReport?.riskAnalysis?.riskLevel ||
+
+            property.aiReport?.riskLevel ||
+
+            "Unknown",
+
 
 
           investmentRating:
-            property.aiReport?.riskLevel || "Unknown",
+
+            property.aiReport?.investmentAnalysis?.investmentRating ||
+
+            "Unknown",
+
 
 
           analyzedAt:
+
             property.analyzedAt,
 
 
         })
+
       );
+
+
 
 
 
@@ -221,35 +437,64 @@ exports.getDashboardStats = async (req, res) => {
 
     return res.status(200).json({
 
+
       success:true,
+
+
+      role:req.user.role,
+
 
 
       stats:{
 
 
+
+        totalUsers,
+
+
+        totalBuilders,
+
+
+        totalBuyers,
+
+
+        totalAdmins,
+
+
+
         totalProperties,
+
 
 
         aiReports,
 
 
+
         averageScore,
 
 
+
         pendingAnalysis:
+
           totalProperties - aiReports,
 
 
       },
 
 
+
+
+
       riskDistribution,
+
 
 
       investmentDistribution,
 
 
+
       propertyTypes,
+
 
 
       recentReports,
@@ -260,30 +505,45 @@ exports.getDashboardStats = async (req, res) => {
 
 
 
+
   }
+
 
 
   catch(error){
 
 
+
     console.error(
+
       "Dashboard Stats Error:",
+
       error
+
     );
+
+
 
 
 
     return res.status(500).json({
 
+
       success:false,
 
+
       message:
+
         error.message ||
+
         "Internal Server Error.",
+
 
     });
 
 
   }
+
+
 
 };

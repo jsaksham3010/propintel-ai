@@ -3,137 +3,309 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
+
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID
 );
 
 
-exports.googleLogin = async (req, res) => {
-  try {
-
-    console.log("GOOGLE BODY:", req.body);
-
-    const { token } = req.body;
-
-
-    if (!token) {
-      return res.status(400).json({
-        success: false,
-        message: "Google token missing",
-      });
-    }
-
-
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-
-    const payload = ticket.getPayload();
-
-    console.log("GOOGLE PAYLOAD:", payload);
-
-
-    const {
-      email,
-      name,
-      picture,
-      sub: googleId,
-    } = payload;
+const ADMIN_EMAIL = "propintelai2026@gmail.com";
 
 
 
-    let user = await User.findOne({ email });
+const getUserRole = (email)=>{
+
+  return email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+
+  ? "admin"
+
+  : "buyer";
+
+};
 
 
 
-    // New Google User
-    if (!user) {
-
-      const hashedPassword = await bcrypt.hash(
-        Math.random().toString(36),
-        10
-      );
 
 
-      user = await User.create({
-
-        fullName: name,
-
-        email,
-
-        password: hashedPassword,
-
-        googleId,
-
-        profileImage: picture,
-
-        isVerified: true,
-
-      });
-
-    }
+exports.googleLogin = async (req,res)=>{
 
 
-    // Generate JWT
+try{
 
-    const jwtToken = jwt.sign(
 
-      {
-        id: user._id,
-        email: user.email,
-      },
-
-      process.env.JWT_SECRET,
-
-      {
-        expiresIn: "7d",
-      }
-
-    );
+console.log(
+"GOOGLE BODY:",
+req.body
+);
 
 
 
-    return res.status(200).json({
-
-      success: true,
-
-      message: "Google login successful",
-
-      token: jwtToken,
-
-      user: {
-
-        id: user._id,
-
-        fullName: user.fullName,
-
-        email: user.email,
-
-      },
-
-    });
+const {token}=req.body;
 
 
 
-  } catch (error) {
+if(!token){
 
 
-    console.log(
-      "GOOGLE ERROR:",
-      error.message
-    );
+return res.status(400).json({
+
+success:false,
+
+message:"Google token missing"
+
+});
 
 
-    return res.status(401).json({
-
-      success: false,
-
-      message: "Google authentication failed",
-
-    });
+}
 
 
-  }
+
+
+
+const ticket = await client.verifyIdToken({
+
+idToken:token,
+
+audience:process.env.GOOGLE_CLIENT_ID,
+
+});
+
+
+
+
+
+const payload = ticket.getPayload();
+
+
+
+
+console.log(
+"GOOGLE PAYLOAD:",
+payload
+);
+
+
+
+
+
+const {
+
+email,
+
+name,
+
+picture,
+
+sub:googleId
+
+}=payload;
+
+
+
+
+
+
+let user = await User.findOne({
+
+email
+
+});
+
+
+
+
+
+
+
+
+// New Google User
+
+if(!user){
+
+
+
+const hashedPassword = await bcrypt.hash(
+
+Math.random().toString(36),
+
+10
+
+);
+
+
+
+
+
+user = await User.create({
+
+fullName:name,
+
+email,
+
+password:hashedPassword,
+
+googleId,
+
+profileImage:picture,
+
+isVerified:true,
+
+authProvider:"google",
+
+role:getUserRole(email),
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+// Existing user without role
+
+if(!user.role){
+
+
+user.role=getUserRole(email);
+
+await user.save();
+
+
+}
+
+
+
+
+
+
+
+// Admin auto sync
+
+if(
+
+user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+
+&&
+
+user.role!=="admin"
+
+){
+
+
+user.role="admin";
+
+await user.save();
+
+
+}
+
+
+
+
+
+
+
+const jwtToken = jwt.sign(
+
+{
+
+id:user._id,
+
+email:user.email,
+
+role:user.role || "buyer"
+
+},
+
+process.env.JWT_SECRET,
+
+
+{
+
+expiresIn:"7d"
+
+}
+
+
+);
+
+
+
+
+
+
+
+
+return res.status(200).json({
+
+
+success:true,
+
+
+message:"Google login successful",
+
+
+token:jwtToken,
+
+
+
+user:{
+
+
+id:user._id,
+
+
+fullName:user.fullName,
+
+
+email:user.email,
+
+
+role:user.role || "buyer"
+
+
+}
+
+
+
+});
+
+
+
+
+
+}
+
+catch(error){
+
+
+console.log(
+
+"GOOGLE ERROR:",
+
+error.message
+
+);
+
+
+
+
+return res.status(401).json({
+
+success:false,
+
+message:"Google authentication failed"
+
+});
+
+
+}
+
+
+
 };

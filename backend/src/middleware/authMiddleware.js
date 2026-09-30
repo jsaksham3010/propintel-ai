@@ -1,86 +1,116 @@
 console.log("AUTH MIDDLEWARE LOADED");
 
+
 const jwt = require("jsonwebtoken");
 
 
-exports.protect = (req, res, next) => {
 
-  console.log(
-    "====== PROTECT CHECK ======"
-  );
-
-  console.log(
-    "URL:",
-    req.originalUrl
-  );
-
-  console.log(
-    "AUTH HEADER:",
-    req.headers.authorization
-  );
+exports.protect = (req,res,next)=>{
 
 
-  try {
-
-    const authHeader = req.headers.authorization;
-
-
-    if (
-      !authHeader ||
-      !authHeader.startsWith("Bearer ")
-    ) {
-
-      return res.status(401).json({
-
-        success:false,
-
-        message:"No token provided"
-
-      });
-
-    }
+console.log(
+"====== PROTECT CHECK ======"
+);
 
 
-    const token =
-      authHeader.split(" ")[1];
+console.log(
+"URL:",
+req.originalUrl
+);
 
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+console.log(
+"AUTH HEADER:",
+req.headers.authorization
+);
 
 
-    console.log(
-      "USER:",
-      decoded
-    );
+
+try{
 
 
-    req.user = decoded;
+const authHeader =
+req.headers.authorization;
 
 
-    next();
+
+if(
+!authHeader ||
+!authHeader.startsWith("Bearer ")
+){
 
 
-  } catch(err) {
+return res.status(401).json({
+
+success:false,
+
+message:"No token provided"
+
+});
 
 
-    console.log(
-      "JWT ERROR:",
-      err.message
-    );
+}
 
 
-    return res.status(401).json({
 
-      success:false,
-
-      message:"Invalid token"
-
-    });
+const token =
+authHeader.split(" ")[1];
 
 
-  }
+
+const decoded =
+jwt.verify(
+token,
+process.env.JWT_SECRET
+);
+
+
+
+console.log(
+"USER:",
+decoded
+);
+
+
+
+req.user={
+
+id:decoded.id,
+
+email:decoded.email,
+
+role:decoded.role || "buyer"
+
+};
+
+
+
+next();
+
+
+
+}
+
+catch(err){
+
+
+console.log(
+"JWT ERROR:",
+err.message
+);
+
+
+
+return res.status(401).json({
+
+success:false,
+
+message:"Invalid token"
+
+});
+
+
+}
+
 
 };
