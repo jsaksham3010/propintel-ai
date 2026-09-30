@@ -16,6 +16,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   Trash2,
+  ShieldCheck,
 } from "lucide-react";
 
 
@@ -62,13 +63,16 @@ const [aiReport,setAiReport] =
 useState<any>(null);
 
 
+const [user,setUser] =
+useState<any>(null);
+
+
 const [loading,setLoading] =
 useState(true);
 
 
 const [error,setError] =
 useState("");
-
 
 
 const [deleteOpen,setDeleteOpen] =
@@ -84,7 +88,35 @@ useState(false);
 
 
 
+
+useEffect(()=>{
+
+
+const storedUser =
+localStorage.getItem("user");
+
+
+if(storedUser){
+
+setUser(
+JSON.parse(storedUser)
+);
+
+}
+
+
+},[]);
+
+
+
+
+
+
+
+
+
 const fetchProperty = useCallback(
+
 async()=>{
 
 
@@ -98,9 +130,10 @@ setError("");
 
 
 const [
-propertyResult,
-reportResult
+propertyResponse,
+reportResponse
 ]
+
 =
 await Promise.allSettled([
 
@@ -114,42 +147,57 @@ getAIReport(id),
 
 
 
+
+
 if(
-propertyResult.status==="fulfilled" &&
-propertyResult.value?.property
+
+propertyResponse.status==="fulfilled" &&
+
+propertyResponse.value?.property
+
 ){
 
 
 setProperty(
-propertyResult.value.property
+
+propertyResponse.value.property
+
 );
 
 
 }
+
 else{
 
 
 setError(
-"Property not found."
+"Property not found"
 );
 
 
 }
+
+
 
 
 
 
 if(
-reportResult.status==="fulfilled"
+
+reportResponse.status==="fulfilled"
+
 ){
 
 
 setAiReport(
-reportResult.value.report
+
+reportResponse.value.report
+
 );
 
 
 }
+
 else{
 
 
@@ -160,16 +208,24 @@ setAiReport(null);
 
 
 
-
 }
-catch(err){
+
+catch(error){
 
 
-console.error(err);
+console.error(
+
+"Property Detail Error:",
+
+error
+
+);
 
 
 setError(
+
 "Something went wrong."
+
 );
 
 
@@ -185,9 +241,7 @@ setLoading(false);
 
 
 
-},
-[id]);
-
+},[id]);
 
 
 
@@ -235,21 +289,28 @@ router.push("/properties");
 
 
 }
-catch(err){
+
+catch(error){
 
 
 console.error(
+
 "Delete Error",
-err
+
+error
+
 );
 
 
 alert(
+
 "Failed to delete property"
+
 );
 
 
 }
+
 finally{
 
 
@@ -259,7 +320,23 @@ setDeleting(false);
 }
 
 
+
 };
+
+
+
+
+
+
+
+const canManage =
+
+user?.role==="builder"
+
+||
+
+user?.role==="buyer";
+
 
 
 
@@ -272,7 +349,7 @@ setDeleting(false);
 if(loading){
 
 
-return(
+return (
 
 <div className="flex min-h-screen items-center justify-center">
 
@@ -282,11 +359,9 @@ Loading Property...
 
 </h2>
 
-
 </div>
 
 );
-
 
 }
 
@@ -300,7 +375,7 @@ Loading Property...
 if(error || !property){
 
 
-return(
+return (
 
 <div className="flex min-h-screen flex-col items-center justify-center gap-4">
 
@@ -340,10 +415,10 @@ Retry
 
 
 
-
-return(
+return (
 
 <AuthGuard>
+
 
 <DashboardLayout>
 
@@ -352,7 +427,6 @@ return(
 
 
 <div className="mx-auto max-w-6xl space-y-8">
-
 
 
 
@@ -382,6 +456,36 @@ Back to Properties
 
 
 
+
+
+{
+
+user?.role==="admin" && (
+
+<div className="flex items-center gap-2 rounded-xl bg-blue-50 px-4 py-2 text-blue-600">
+
+
+<ShieldCheck size={18}/>
+
+Admin View
+
+</div>
+
+)
+
+}
+
+
+
+
+
+
+
+
+{
+
+canManage && (
+
 <button
 
 onClick={()=>setDeleteOpen(true)}
@@ -397,6 +501,10 @@ Delete Property
 
 
 </button>
+
+)
+
+}
 
 
 
@@ -442,6 +550,11 @@ images={property.images || []}
 
 
 
+
+{
+
+canManage && (
+
 <UploadImages
 
 propertyId={id}
@@ -450,12 +563,21 @@ onUploadSuccess={fetchProperty}
 
 />
 
+)
+
+}
 
 
 
 
 
 
+
+
+
+{
+
+canManage && (
 
 <AIAnalysis
 
@@ -464,6 +586,10 @@ propertyId={id}
 onAnalysisComplete={fetchProperty}
 
 />
+
+)
+
+}
 
 
 
@@ -488,7 +614,6 @@ property={property}
 
 
 
-
 </div>
 
 
@@ -498,6 +623,13 @@ property={property}
 
 
 
+
+
+
+
+{
+
+canManage && (
 
 <DeleteModal
 
@@ -511,7 +643,9 @@ loading={deleting}
 
 />
 
+)
 
+}
 
 
 

@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import Link from "next/link";
 
 import AuthGuard from "@/components/auth/AuthGuard";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+
 
 import {
   getAllAIReports,
@@ -22,11 +27,12 @@ import {
   Download,
   ArrowRight,
   Filter,
-  CheckSquare,
 } from "lucide-react";
 
 
-import { generateReportPDF } from "@/utils/generateReportPDF";
+import {
+  generateReportPDF,
+} from "@/utils/generateReportPDF";
 
 
 
@@ -35,8 +41,10 @@ import { generateReportPDF } from "@/utils/generateReportPDF";
 export default function ReportsPage(){
 
 
+
 const [reports,setReports] =
 useState<PropertyReport[]>([]);
+
 
 
 const [loading,setLoading] =
@@ -69,7 +77,6 @@ useState<PropertyReport[]>([]);
 
 
 
-
 useEffect(()=>{
 
 
@@ -83,23 +90,37 @@ const data =
 await getAllAIReports();
 
 
+
 setReports(
+
 data.reports || []
+
 );
 
 
+
 }
+
 catch(err){
 
+
 console.error(
+
 "Reports Error:",
+
 err
+
 );
 
+
+
 }
+
 finally{
 
+
 setLoading(false);
+
 
 }
 
@@ -107,7 +128,9 @@ setLoading(false);
 };
 
 
+
 loadReports();
+
 
 
 },[]);
@@ -121,22 +144,40 @@ loadReports();
 
 
 const filteredReports =
+
 useMemo(()=>{
 
 
 return reports.filter((report)=>{
 
 
+
 const text =
+
 `${report.title} ${report.city} ${report.state}`
+
 .toLowerCase();
 
 
 
 const searchMatch =
+
 text.includes(
+
 search.toLowerCase()
+
 );
+
+
+
+
+
+
+const reportRisk =
+
+report.aiReport?.riskAnalysis?.riskLevel
+
+?.toLowerCase() || "";
 
 
 
@@ -146,44 +187,57 @@ const riskMatch =
 
 !risk ||
 
-report.aiReport?.riskLevel
-?.toLowerCase()===risk;
+reportRisk.includes(risk);
+
+
 
 
 
 
 
 const scoreValue =
+
 report.aiReport?.overallScore || 0;
 
 
 
-let scoreMatch=true;
+let scoreMatch = true;
+
+
 
 
 
 if(score==="80"){
 
-scoreMatch =
-scoreValue >= 80;
+
+scoreMatch = scoreValue >= 80;
+
 
 }
+
 
 
 if(score==="60"){
 
+
 scoreMatch =
+
 scoreValue >=60 &&
+
 scoreValue <80;
 
+
 }
+
+
 
 
 
 if(score==="low"){
 
-scoreMatch =
-scoreValue <60;
+
+scoreMatch = scoreValue <60;
+
 
 }
 
@@ -192,13 +246,19 @@ scoreValue <60;
 
 
 return (
+
 searchMatch &&
+
 riskMatch &&
+
 scoreMatch
+
 );
 
 
+
 });
+
 
 
 },[
@@ -217,6 +277,7 @@ score
 
 
 const averageScore =
+
 reports.length
 
 ?
@@ -227,7 +288,9 @@ reports.reduce(
 
 (sum,item)=>
 
-sum + (item.aiReport?.overallScore || 0),
+sum +
+
+(item.aiReport?.overallScore || 0),
 
 0
 
@@ -252,13 +315,18 @@ reports.length
 
 
 const toggleSelect = (
+
 report:PropertyReport
+
 )=>{
 
 
 const exists =
+
 selectedReports.some(
+
 (item)=>item._id===report._id
+
 );
 
 
@@ -277,6 +345,7 @@ item._id!==report._id
 )
 
 );
+
 
 
 }
@@ -306,15 +375,20 @@ report
 
 
 
+
 const selectAll = ()=>{
 
 
 setSelectedReports(
+
 filteredReports
+
 );
 
 
 };
+
+
 
 
 
@@ -328,6 +402,7 @@ setSelectedReports([]);
 
 
 };
+
 
 
 
@@ -376,7 +451,10 @@ return(
 
 
 
+
+
 <div>
+
 
 <h1 className="text-4xl font-bold">
 
@@ -401,15 +479,21 @@ Gemini AI powered property intelligence reports.
 
 
 
+
 <div className="grid gap-5 md:grid-cols-3">
+
+
 
 
 
 <div className="rounded-2xl border bg-white p-6">
 
+
 <div className="flex items-center gap-3">
 
+
 <Building2 className="text-blue-600"/>
+
 
 <h3 className="font-semibold">
 
@@ -417,7 +501,9 @@ Total Reports
 
 </h3>
 
+
 </div>
+
 
 
 <p className="mt-4 text-4xl font-bold">
@@ -427,7 +513,9 @@ Total Reports
 </p>
 
 
+
 </div>
+
 
 
 
@@ -440,7 +528,9 @@ Total Reports
 
 <div className="flex items-center gap-3">
 
+
 <TrendingUp className="text-green-600"/>
+
 
 <h3 className="font-semibold">
 
@@ -448,7 +538,9 @@ Average Score
 
 </h3>
 
+
 </div>
+
 
 
 <p className="mt-4 text-4xl font-bold text-green-600">
@@ -458,6 +550,7 @@ Average Score
 </p>
 
 
+
 </div>
 
 
@@ -469,9 +562,12 @@ Average Score
 
 <div className="rounded-2xl border bg-white p-6">
 
+
 <div className="flex items-center gap-3">
 
+
 <ShieldCheck className="text-indigo-600"/>
+
 
 <h3 className="font-semibold">
 
@@ -479,7 +575,9 @@ Selected Reports
 
 </h3>
 
+
 </div>
+
 
 
 <p className="mt-4 text-4xl font-bold">
@@ -489,7 +587,10 @@ Selected Reports
 </p>
 
 
+
 </div>
+
+
 
 
 
@@ -508,9 +609,12 @@ Selected Reports
 
 <div className="mb-5 flex items-center gap-2 font-bold">
 
+
 <Filter size={20}/>
 
+
 Filters
+
 
 </div>
 
@@ -518,7 +622,10 @@ Filters
 
 
 
+
 <div className="grid gap-4 md:grid-cols-3">
+
+
 
 
 
@@ -556,6 +663,7 @@ className="w-full rounded-xl border py-3 pl-10 pr-4"
 
 
 
+
 <select
 
 value={risk}
@@ -566,11 +674,13 @@ className="rounded-xl border px-4 py-3"
 
 >
 
+
 <option value="">
 
 All Risk
 
 </option>
+
 
 <option value="low">
 
@@ -593,7 +703,9 @@ High
 </option>
 
 
+
 </select>
+
 
 
 
@@ -641,17 +753,18 @@ Below 60
 </option>
 
 
+
 </select>
 
 
 
 
-</div>
 
 
 </div>
 
 
+</div>
 
 
 
@@ -659,7 +772,9 @@ Below 60
 
 
 
-<div className="flex flex-wrap items-center justify-between rounded-3xl border bg-white p-5">
+
+
+<div className="flex flex-wrap justify-between rounded-3xl border bg-white p-5">
 
 
 <div className="flex gap-3">
@@ -692,7 +807,9 @@ Clear
 </button>
 
 
+
 </div>
+
 
 
 
@@ -712,6 +829,7 @@ className="flex items-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-white 
 
 <Download size={18}/>
 
+
 Download Selected PDF
 
 
@@ -730,7 +848,9 @@ Download Selected PDF
 
 
 {
+
 loading ?
+
 
 <p>
 
@@ -739,14 +859,19 @@ Loading Reports...
 </p>
 
 
+
 :
+
 
 filteredReports.length===0 ?
 
 
+
 <div className="rounded-2xl border bg-white p-10 text-center">
 
+
 <Sparkles className="mx-auto text-blue-600"/>
+
 
 <h2 className="mt-3 text-xl font-bold">
 
@@ -754,13 +879,20 @@ No Reports Found
 
 </h2>
 
+
 </div>
+
+
+
 
 
 
 :
 
+
+
 <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+
 
 
 {
@@ -788,6 +920,7 @@ className="overflow-hidden rounded-3xl border bg-white shadow-sm hover:shadow-xl
 
 report.images?.[0]?.url ?
 
+
 <img
 
 src={report.images[0].url}
@@ -799,6 +932,7 @@ className="h-full w-full object-cover"
 
 :
 
+
 <div className="flex h-full items-center justify-center text-gray-400">
 
 No Image
@@ -809,6 +943,7 @@ No Image
 }
 
 
+
 </div>
 
 
@@ -817,7 +952,9 @@ No Image
 
 
 
+
 <div className="p-6">
+
 
 
 <div className="flex justify-between">
@@ -835,11 +972,11 @@ No Image
 
 type="checkbox"
 
-checked={
-selectedReports.some(
+checked={selectedReports.some(
+
 (item)=>item._id===report._id
-)
-}
+
+)}
 
 onChange={()=>toggleSelect(report)}
 
@@ -849,6 +986,9 @@ className="h-5 w-5"
 
 
 </div>
+
+
+
 
 
 
@@ -864,10 +1004,14 @@ className="h-5 w-5"
 
 
 
+
+
 <div className="mt-5 flex justify-between">
 
 
+
 <div>
+
 
 <p className="text-sm text-gray-500">
 
@@ -883,20 +1027,115 @@ AI Score
 </p>
 
 
+
 </div>
 
 
 
 
-<span className="rounded-full bg-blue-50 px-4 py-2 text-blue-600 font-semibold">
 
-{report.aiReport?.riskLevel || "-"}
+
+
+
+<span className={`rounded-full px-4 py-2 font-semibold ${
+(
+report.aiReport?.riskAnalysis?.riskLevel || ""
+)
+.toLowerCase()
+.includes("low")
+
+?
+
+"bg-green-100 text-green-700"
+
+:
+
+(
+report.aiReport?.riskAnalysis?.riskLevel || ""
+)
+.toLowerCase()
+.includes("medium")
+
+?
+
+"bg-yellow-100 text-yellow-700"
+
+:
+
+"bg-red-100 text-red-700"
+
+}`}>
+
+
+{
+
+report.aiReport?.riskAnalysis?.riskLevel ||
+
+"Not Available"
+
+}
+
+
 
 </span>
 
 
 
 </div>
+
+
+
+
+
+
+
+
+<div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+
+
+<TrendingUp size={15}/>
+
+
+{
+
+report.aiReport?.investmentAnalysis?.investmentRating ||
+
+"Not Available"
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="mt-4 text-sm text-gray-500">
+
+
+Analyzed:
+
+{" "}
+
+{
+
+new Date(
+
+report.analyzedAt
+
+).toLocaleDateString("en-IN")
+
+}
+
+
+</div>
+
+
 
 
 
@@ -915,9 +1154,12 @@ className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white"
 
 >
 
+
 View
 
+
 <ArrowRight size={16}/>
+
 
 </Link>
 
@@ -926,17 +1168,27 @@ View
 
 
 
+
 <button
 
-onClick={()=>generateReportPDF(report.aiReport,report)}
+onClick={()=>generateReportPDF(
+
+report.aiReport,
+
+report
+
+)}
 
 className="flex items-center gap-2 rounded-xl border px-4 py-2 text-green-600"
 
 >
 
+
 <Download size={16}/>
 
+
 PDF
+
 
 </button>
 
@@ -946,7 +1198,12 @@ PDF
 
 
 
+
+
+
 </div>
+
+
 
 
 
@@ -956,7 +1213,9 @@ PDF
 
 ))
 
+
 }
+
 
 
 </div>

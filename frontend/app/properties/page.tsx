@@ -11,15 +11,12 @@ import {
   getProperties,
 } from "@/services/propertyService";
 
-
 import {
   Loader2,
   Sparkles,
   Pencil,
   MapPin,
 } from "lucide-react";
-
-
 
 
 
@@ -55,17 +52,13 @@ interface Property {
 
 
 
-
 type Filters = Record<string,string>;
 
 
 
 
 
-
-
 export default function PropertiesPage(){
-
 
 
 const [properties,setProperties] =
@@ -80,9 +73,37 @@ const [error,setError] =
 useState("");
 
 
-
 const [filters,setFilters] =
 useState<Filters>({});
+
+
+const [user,setUser] =
+useState<any>(null);
+
+
+
+
+
+useEffect(()=>{
+
+
+const storedUser =
+localStorage.getItem("user");
+
+
+if(storedUser){
+
+setUser(
+JSON.parse(storedUser)
+);
+
+}
+
+
+fetchProperties();
+
+
+},[]);
 
 
 
@@ -124,7 +145,10 @@ data.properties || []
 catch(err){
 
 
-console.error(err);
+console.error(
+"Property Fetch Error:",
+err
+);
 
 
 setError(
@@ -152,15 +176,27 @@ setLoading(false);
 
 
 
-useEffect(()=>{
 
 
-fetchProperties();
+const pageTitle =
 
+user?.role==="admin"
 
-},[]);
+?
 
+"All Properties"
 
+:
+
+user?.role==="builder"
+
+?
+
+"My Listings"
+
+:
+
+"My Properties";
 
 
 
@@ -174,8 +210,8 @@ return(
 
 <AuthGuard>
 
-<DashboardLayout>
 
+<DashboardLayout>
 
 
 <div className="p-8">
@@ -189,16 +225,17 @@ return(
 
 <div>
 
+
 <h1 className="text-3xl font-bold">
 
-My Properties
+{pageTitle}
 
 </h1>
 
 
 <p className="mt-2 text-gray-500">
 
-Manage your real estate portfolio
+Manage real estate portfolio and AI property intelligence.
 
 </p>
 
@@ -207,6 +244,12 @@ Manage your real estate portfolio
 
 
 
+
+
+
+
+{
+user?.role !== "admin" && (
 
 
 <Link
@@ -222,7 +265,15 @@ className="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white hover:bg-bl
 </Link>
 
 
+)
+
+}
+
+
+
 </div>
+
+
 
 
 
@@ -258,6 +309,7 @@ loading &&
 
 <div className="flex h-80 items-center justify-center">
 
+
 <Loader2
 
 size={40}
@@ -265,6 +317,7 @@ size={40}
 className="animate-spin text-blue-600"
 
 />
+
 
 </div>
 
@@ -301,7 +354,9 @@ error &&
 !error &&
 properties.length===0 &&
 
+
 <div className="mt-8 rounded-2xl border bg-white p-16 text-center">
+
 
 <h2 className="text-2xl font-bold">
 
@@ -310,9 +365,17 @@ No Properties Found
 </h2>
 
 
+<p className="mt-2 text-gray-500">
+
+Start adding properties to generate AI insights.
+
+</p>
+
+
 </div>
 
 }
+
 
 
 
@@ -372,6 +435,7 @@ className="h-56 w-full object-cover"
 
 
 
+
 {
 property.aiReport &&
 
@@ -393,7 +457,11 @@ property.aiReport &&
 
 
 
-<span className={`rounded-full bg-white px-3 py-1 text-sm font-semibold shadow ${
+
+
+<span
+
+className={`rounded-full bg-white px-3 py-1 text-sm font-semibold shadow ${
 property.aiReport.riskLevel?.toLowerCase()==="low"
 
 ?
@@ -404,15 +472,20 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 
 "text-red-600"
 
-}`}>
+}`}
 
-{property.aiReport.riskLevel}
+>
+
+
+{property.aiReport.riskLevel || "Unknown"}
+
 
 </span>
 
 
 
 </div>
+
 
 }
 
@@ -427,8 +500,8 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 
 
 
-<div className="p-6">
 
+<div className="p-6">
 
 
 <h2 className="text-xl font-bold">
@@ -436,6 +509,7 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 {property.title}
 
 </h2>
+
 
 
 
@@ -470,7 +544,6 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 
 
 
-
 <div className="mt-4 flex gap-2">
 
 
@@ -482,6 +555,7 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 
 
 
+
 <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
 
 {property.area} sq.ft
@@ -490,6 +564,7 @@ property.aiReport.riskLevel?.toLowerCase()==="low"
 
 
 </div>
+
 
 
 
@@ -515,6 +590,12 @@ View Details →
 
 
 
+
+
+
+{
+user?.role !== "admin" && (
+
 <Link
 
 href={`/properties/edit/${property._id}`}
@@ -530,6 +611,13 @@ Edit
 </Link>
 
 
+)
+
+}
+
+
+
+
 
 </div>
 
@@ -538,7 +626,10 @@ Edit
 
 
 
+
 </div>
+
+
 
 
 
@@ -560,12 +651,12 @@ Edit
 
 
 
-
 </div>
 
 
 
 </DashboardLayout>
+
 
 </AuthGuard>
 

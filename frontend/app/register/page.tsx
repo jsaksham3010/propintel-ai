@@ -3,356 +3,870 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
 import api from "@/services/api";
 import { GoogleLogin } from "@react-oauth/google";
 import { Loader2 } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+
 
 export default function RegisterPage() {
 
-  const router = useRouter();
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
+const router = useRouter();
 
-  const [otpSent, setOtpSent] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+const { setAuth } = useAuthStore();
 
 
-  const handleSendOTP = async () => {
 
-    try {
 
-      setLoading(true);
-      setError("");
+const [fullName,setFullName] = useState("");
 
-      await api.post("/auth/send-otp", {
-        email,
-      });
+const [email,setEmail] = useState("");
 
+const [password,setPassword] = useState("");
 
-      setOtpSent(true);
+const [otp,setOtp] = useState("");
 
 
-    } catch (err:any) {
 
-      setError(
-        err.response?.data?.message ||
-        "Failed to send OTP"
-      );
+const [role,setRole] = useState<
+"buyer" | "builder"
+>("buyer");
 
-    } finally {
 
-      setLoading(false);
 
-    }
 
-  };
+// Builder Details
 
+const [companyName,setCompanyName] = useState("");
 
+const [companyWebsite,setCompanyWebsite] = useState("");
 
-  const handleVerifyRegister = async (
-    e: React.FormEvent
-  ) => {
+const [businessAddress,setBusinessAddress] = useState("");
 
-    e.preventDefault();
 
 
-    try {
 
-      setLoading(true);
-      setError("");
 
+const [otpSent,setOtpSent] = useState(false);
 
-      const response = await api.post(
-        "/auth/verify-otp",
-        {
-          fullName,
-          email,
-          password,
-          otp,
-        }
-      );
+const [loading,setLoading] = useState(false);
 
+const [error,setError] = useState("");
 
-      const {
-        token,
-        user
-      } = response.data;
 
 
 
-      localStorage.setItem(
-        "token",
-        token
-      );
 
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(user)
-      );
 
 
-      router.push("/dashboard");
+const redirectByRole = (role:string)=>{
 
 
+if(role==="admin"){
 
-    } catch(err:any) {
+router.push("/admin/dashboard");
 
-      setError(
-        err.response?.data?.message ||
-        "Verification failed"
-      );
+}
 
+else if(role==="builder"){
 
-    } finally {
+router.push("/builder/dashboard");
 
-      setLoading(false);
+}
 
-    }
+else{
 
-  };
+router.push("/dashboard");
 
+}
 
 
+};
 
-  const handleGoogleRegister = async (
-    credentialResponse:any
-  ) => {
 
-    try {
 
-      const response = await api.post(
-        "/auth/google",
-        {
-          token: credentialResponse.credential,
-        }
-      );
 
 
-      const {
-        token,
-        user
-      } = response.data;
 
 
-      localStorage.setItem(
-        "token",
-        token
-      );
 
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(user)
-      );
+// Send OTP
 
+const handleSendOTP = async()=>{
 
-      router.push("/dashboard");
 
+try{
 
-    } catch {
 
-      setError(
-        "Google signup failed"
-      );
+setLoading(true);
 
-    }
+setError("");
 
-  };
 
 
+await api.post(
 
-  return (
+"/auth/send-otp",
 
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+{
 
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border p-8">
+email
 
+}
 
-        <h1 className="text-3xl font-bold text-center text-gray-900">
-          Create Account
-        </h1>
+);
 
 
-        <p className="text-center text-gray-500 mt-2 mb-6">
-          Join PropIntel AI
-        </p>
 
+setOtpSent(true);
 
 
-        {error && (
 
-          <div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-sm">
+}
 
-            {error}
+catch(err:any){
 
-          </div>
 
-        )}
+setError(
 
+err.response?.data?.message ||
 
+"Failed to send OTP"
 
+);
 
-        <div className="flex justify-center mb-5">
 
-          <GoogleLogin
-            onSuccess={handleGoogleRegister}
-            onError={() =>
-              setError(
-                "Google signup failed"
-              )
-            }
-          />
+}
 
-        </div>
+finally{
 
 
+setLoading(false);
 
 
-        <div className="flex items-center gap-3 mb-5">
+}
 
-          <div className="h-px bg-gray-200 flex-1"/>
 
-          <span className="text-sm text-gray-400">
-            OR
-          </span>
+};
 
-          <div className="h-px bg-gray-200 flex-1"/>
 
-        </div>
 
 
 
 
-        <form
-          onSubmit={handleVerifyRegister}
-          className="space-y-4"
-        >
 
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e)=>setFullName(e.target.value)}
-            className="w-full border rounded-xl px-4 py-3"
-            required
-          />
 
+// Verify Register
 
+const handleVerifyRegister = async(
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            className="w-full border rounded-xl px-4 py-3"
-            required
-          />
+e:React.FormEvent
 
+)=>{
 
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            className="w-full border rounded-xl px-4 py-3"
-            required
-          />
+e.preventDefault();
 
 
 
-          {!otpSent && (
+try{
 
-            <button
-              type="button"
-              onClick={handleSendOTP}
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold flex justify-center items-center gap-2"
-            >
 
-              {
-                loading &&
-                <Loader2
-                  size={18}
-                  className="animate-spin"
-                />
-              }
+setLoading(true);
 
-              Send OTP
+setError("");
 
-            </button>
 
-          )}
 
 
 
-          {otpSent && (
+const response = await api.post(
 
-            <>
+"/auth/verify-otp",
 
-              <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e)=>setOtp(e.target.value)}
-                className="w-full border rounded-xl px-4 py-3"
-                required
-              />
+{
 
 
+fullName,
 
-              <button
-                disabled={loading}
-                className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex justify-center items-center gap-2"
-              >
+email,
 
-                {
-                  loading &&
-                  <Loader2
-                    size={18}
-                    className="animate-spin"
-                  />
-                }
+password,
 
-                Verify & Create Account
+otp,
 
-              </button>
+role,
 
-            </>
 
-          )}
+companyName:
 
+role==="builder"
 
-        </form>
+?
 
+companyName
 
+:
 
+null,
 
-        <p className="text-center text-sm text-gray-500 mt-6">
 
-          Already have an account?{" "}
+companyWebsite:
 
-          <Link
-            href="/login"
-            className="text-blue-600 font-medium"
-          >
-            Login
-          </Link>
+role==="builder"
 
-        </p>
+?
 
+companyWebsite
 
+:
 
-      </div>
+null,
 
-    </div>
 
-  );
+businessAddress:
+
+role==="builder"
+
+?
+
+businessAddress
+
+:
+
+null,
+
+
+}
+
+);
+
+
+
+
+
+
+const {
+
+token,
+
+user
+
+}=response.data;
+
+
+
+
+
+setAuth(
+
+token,
+
+user
+
+);
+
+
+
+
+
+redirectByRole(
+
+user.role || role
+
+);
+
+
+
+
+
+}
+
+catch(err:any){
+
+
+setError(
+
+err.response?.data?.message ||
+
+"Verification failed"
+
+);
+
+
+}
+
+finally{
+
+
+setLoading(false);
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+// Google Register
+
+const handleGoogleRegister = async(
+
+credentialResponse:any
+
+)=>{
+
+
+try{
+
+
+setError("");
+
+
+
+const response = await api.post(
+
+"/auth/google",
+
+{
+
+token:credentialResponse.credential
+
+}
+
+);
+
+
+
+
+
+const {
+
+token,
+
+user
+
+}=response.data;
+
+
+
+
+
+setAuth(
+
+token,
+
+user
+
+);
+
+
+
+
+
+redirectByRole(
+
+user.role || "buyer"
+
+);
+
+
+
+}
+
+catch(err:any){
+
+
+setError(
+
+err.response?.data?.message ||
+
+"Google signup failed"
+
+);
+
+
+}
+
+
+};
+
+
+
+
+
+
+
+
+return (
+
+<div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+
+
+<div className="w-full max-w-md bg-white rounded-3xl shadow-xl border p-8">
+
+
+
+<h1 className="text-3xl font-bold text-center text-gray-900">
+
+Create Account
+
+</h1>
+
+
+
+
+<p className="text-center text-gray-500 mt-2 mb-6">
+
+Join PropIntel AI
+
+</p>
+
+
+
+
+
+
+{error && (
+
+<div className="mb-4 bg-red-50 text-red-600 p-3 rounded-xl text-sm">
+
+{error}
+
+</div>
+
+)}
+
+
+
+
+
+
+
+<div className="flex justify-center mb-5">
+
+
+<GoogleLogin
+
+onSuccess={handleGoogleRegister}
+
+onError={()=>setError(
+"Google signup failed"
+)}
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="flex items-center gap-3 mb-5">
+
+
+<div className="h-px bg-gray-200 flex-1"/>
+
+
+<span className="text-sm text-gray-400">
+
+OR
+
+</span>
+
+
+<div className="h-px bg-gray-200 flex-1"/>
+
+
+</div>
+
+
+
+
+
+
+
+
+<form
+
+onSubmit={handleVerifyRegister}
+
+className="space-y-4"
+
+>
+
+
+
+
+
+
+<input
+
+type="text"
+
+placeholder="Full Name"
+
+value={fullName}
+
+onChange={(e)=>setFullName(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+required
+
+/>
+
+
+
+
+
+
+<input
+
+type="email"
+
+placeholder="Email"
+
+value={email}
+
+onChange={(e)=>setEmail(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+required
+
+/>
+
+
+
+
+
+
+
+
+
+<select
+
+value={role}
+
+onChange={(e)=>
+
+setRole(
+
+e.target.value as "buyer"|"builder"
+
+)
+
+}
+
+className="w-full border rounded-xl px-4 py-3"
+
+>
+
+
+<option value="buyer">
+
+Buyer
+
+</option>
+
+
+
+<option value="builder">
+
+Builder / Property Dealer
+
+</option>
+
+
+
+</select>
+
+
+
+
+
+
+
+
+{
+role==="builder" && (
+
+<>
+
+
+<input
+
+type="text"
+
+placeholder="Company / Firm Name"
+
+value={companyName}
+
+onChange={(e)=>setCompanyName(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+required
+
+/>
+
+
+
+
+
+<input
+
+type="text"
+
+placeholder="Company Website (optional)"
+
+value={companyWebsite}
+
+onChange={(e)=>setCompanyWebsite(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+/>
+
+
+
+
+
+
+<textarea
+
+placeholder="Business Address"
+
+value={businessAddress}
+
+onChange={(e)=>setBusinessAddress(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+rows={3}
+
+/>
+
+
+
+</>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+<input
+
+type="password"
+
+placeholder="Password"
+
+value={password}
+
+onChange={(e)=>setPassword(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+required
+
+/>
+
+
+
+
+
+
+
+
+
+{
+!otpSent && (
+
+<button
+
+type="button"
+
+onClick={handleSendOTP}
+
+disabled={loading}
+
+className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold flex justify-center items-center gap-2"
+
+>
+
+
+{
+
+loading &&
+
+<Loader2
+
+size={18}
+
+className="animate-spin"
+
+/>
+
+}
+
+
+Send OTP
+
+
+</button>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{
+otpSent && (
+
+<>
+
+
+<input
+
+type="text"
+
+placeholder="Enter OTP"
+
+value={otp}
+
+onChange={(e)=>setOtp(e.target.value)}
+
+className="w-full border rounded-xl px-4 py-3"
+
+required
+
+/>
+
+
+
+
+
+
+<button
+
+disabled={loading}
+
+className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold flex justify-center items-center gap-2"
+
+>
+
+
+{
+
+loading &&
+
+<Loader2
+
+size={18}
+
+className="animate-spin"
+
+/>
+
+}
+
+
+
+Verify & Create Account
+
+
+</button>
+
+
+
+</>
+
+)
+
+}
+
+
+
+
+
+
+
+</form>
+
+
+
+
+
+
+
+
+<p className="text-center text-sm text-gray-500 mt-6">
+
+
+Already have an account?{" "}
+
+
+
+<Link
+
+href="/login"
+
+className="text-blue-600 font-medium"
+
+>
+
+Login
+
+</Link>
+
+
+</p>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+);
+
+
 }

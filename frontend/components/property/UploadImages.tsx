@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 
 import {
   Upload,
   ImagePlus,
   X,
   CheckCircle,
+  AlertCircle,
 } from "lucide-react";
+
 
 import {
   uploadPropertyImages,
@@ -26,48 +31,90 @@ interface UploadImagesProps {
 
 
 
+
+
 export default function UploadImages({
 
-  propertyId,
+propertyId,
 
-  onUploadSuccess,
+onUploadSuccess,
 
 }:UploadImagesProps){
 
 
 
 const [files,setFiles] =
+
 useState<File[]>([]);
 
 
+
 const [loading,setLoading] =
+
 useState(false);
 
 
+
 const [success,setSuccess] =
+
 useState("");
 
 
 
+const [error,setError] =
+
+useState("");
+
+
+
+
+
+
+
+
 const handleFileChange = (
+
 e:React.ChangeEvent<HTMLInputElement>
+
 )=>{
 
 
 if(!e.target.files)
+
 return;
 
 
 
 const selected =
+
 Array.from(e.target.files);
+
+
+
+if(selected.length > 10){
+
+
+setError(
+
+"Maximum 10 images allowed."
+
+);
+
+
+return;
+
+
+}
 
 
 
 setFiles(selected);
 
+setError("");
 
 setSuccess("");
+
+
 
 };
 
@@ -77,13 +124,20 @@ setSuccess("");
 
 
 
-const removeFile = (index:number)=>{
+
+const removeFile = (
+
+index:number
+
+)=>{
 
 
 setFiles(
 
 files.filter(
+
 (_,i)=>i!==index
+
 )
 
 );
@@ -97,10 +151,16 @@ files.filter(
 
 
 
+
+
 const handleUpload = async()=>{
 
 
 if(files.length===0){
+
+setError(
+"Please select images first."
+);
 
 return;
 
@@ -108,10 +168,16 @@ return;
 
 
 
+
+
 try{
 
 
 setLoading(true);
+
+setError("");
+
+
 
 
 await uploadPropertyImages(
@@ -124,8 +190,12 @@ files
 
 
 
+
+
 setSuccess(
+
 "Images uploaded successfully!"
+
 );
 
 
@@ -134,23 +204,36 @@ setFiles([]);
 
 
 
+
+
 onUploadSuccess();
+
 
 
 
 }
 
-catch(error){
+catch(error:any){
 
 
 console.error(
+
+"Upload Error",
+
 error
+
 );
 
 
-setSuccess(
-"Upload failed."
+
+setError(
+
+error.response?.data?.message ||
+
+"Image upload failed."
+
 );
+
 
 
 }
@@ -173,17 +256,24 @@ setLoading(false);
 
 
 
+
 return (
 
 <div className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
 
 
-<div className="flex items-center gap-3 mb-6">
+
+
+
+<div className="mb-6 flex items-center gap-3">
 
 
 <ImagePlus
+
 className="text-blue-600"
+
 size={28}
+
 />
 
 
@@ -195,6 +285,8 @@ Upload Property Images
 
 
 </div>
+
+
 
 
 
@@ -218,6 +310,7 @@ className="text-blue-600"
 />
 
 
+
 <p className="mt-4 font-semibold">
 
 Click to select images
@@ -228,9 +321,11 @@ Click to select images
 
 <p className="mt-1 text-sm text-gray-500">
 
-JPG / PNG supported
+Maximum 10 images • JPG / PNG
 
 </p>
+
+
 
 
 
@@ -249,6 +344,7 @@ onChange={handleFileChange}
 />
 
 
+
 </label>
 
 
@@ -257,8 +353,11 @@ onChange={handleFileChange}
 
 
 
+
+
 {
-files.length>0 &&
+
+files.length>0 && (
 
 <div className="mt-6">
 
@@ -277,7 +376,9 @@ files.length>0 &&
 
 
 {
+
 files.map(
+
 (file,index)=>(
 
 
@@ -304,7 +405,10 @@ className="h-32 w-full object-cover"
 
 
 
+
 <button
+
+type="button"
 
 onClick={()=>removeFile(index)}
 
@@ -320,14 +424,18 @@ className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white"
 
 
 
+
 </div>
 
 
 )
 
+
 )
 
+
 }
+
 
 
 </div>
@@ -352,7 +460,9 @@ className="mt-6 flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-se
 <Upload size={18}/>
 
 
+
 {
+
 loading
 
 ?
@@ -366,11 +476,14 @@ loading
 }
 
 
+
 </button>
 
 
 
 </div>
+
+)
 
 }
 
@@ -381,18 +494,50 @@ loading
 
 
 
+
 {
-success &&
+
+success && (
 
 <div className="mt-5 flex items-center gap-2 rounded-xl bg-green-50 p-4 text-green-700">
 
 
 <CheckCircle size={18}/>
 
+
 {success}
 
 
 </div>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+error && (
+
+<div className="mt-5 flex items-center gap-2 rounded-xl bg-red-50 p-4 text-red-600">
+
+
+<AlertCircle size={18}/>
+
+
+{error}
+
+
+</div>
+
+)
 
 }
 

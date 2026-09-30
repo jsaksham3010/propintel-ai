@@ -8,20 +8,13 @@ import {
   Home,
   Ruler,
   Pencil,
+  Building2,
 } from "lucide-react";
 
 
 interface PropertyInfoProps {
 
-  property:{
-    _id?:string;
-    title:string;
-    city:string;
-    state:string;
-    price:number;
-    area:number;
-    propertyType:string;
-  };
+  property:any;
 
 }
 
@@ -29,11 +22,28 @@ interface PropertyInfoProps {
 
 
 
+
 export default function PropertyInfo({
 
-  property,
+property,
 
 }:PropertyInfoProps){
+
+
+
+
+
+const builderName =
+
+property.owner?.companyName ||
+
+property.owner?.fullName ||
+
+"Individual Owner";
+
+
+
+
 
 
 
@@ -42,10 +52,19 @@ return (
 <div>
 
 
+
+
+
 <div className="flex items-start justify-between gap-4">
 
 
+
+
+
 <div className="flex flex-col gap-4">
+
+
+
 
 
 <h1 className="text-4xl font-bold text-gray-900">
@@ -57,23 +76,69 @@ return (
 
 
 
-<div className="inline-flex w-fit items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-600">
+
+
+
+<div className="flex flex-wrap gap-3">
+
+
+
+
+
+<div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-600">
+
 
 <MapPin size={18}/>
 
+
 {property.city}, {property.state}
 
+
 </div>
 
 
+
+
+
+
+
+
+<div className="inline-flex items-center gap-2 rounded-full bg-purple-50 px-4 py-2 text-purple-600">
+
+
+<Building2 size={18}/>
+
+
+{builderName}
+
+
 </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
 
 
 
 
 
 {
+
 property._id &&
+
 
 <Link
 
@@ -83,13 +148,19 @@ className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 font-semibol
 
 >
 
+
 <Pencil size={18}/>
+
 
 Edit Property
 
+
 </Link>
 
+
 }
+
+
 
 
 
@@ -110,13 +181,17 @@ Edit Property
 
 
 
+
 <div className="rounded-3xl bg-blue-50 p-6">
+
 
 
 <div className="flex items-center gap-3">
 
 
+
 <div className="rounded-xl bg-blue-600 p-3">
+
 
 <IndianRupee
 
@@ -126,7 +201,10 @@ className="text-white"
 
 />
 
+
 </div>
+
+
 
 
 <p className="text-gray-500">
@@ -136,20 +214,29 @@ Price
 </p>
 
 
+
+
 </div>
+
+
+
 
 
 
 
 <h2 className="mt-5 text-3xl font-bold text-gray-900">
 
+
 ₹{Number(property.price || 0).toLocaleString("en-IN")}
+
 
 </h2>
 
 
 
+
 </div>
+
 
 
 
@@ -161,10 +248,13 @@ Price
 <div className="rounded-3xl bg-indigo-50 p-6">
 
 
+
 <div className="flex items-center gap-3">
 
 
+
 <div className="rounded-xl bg-indigo-600 p-3">
+
 
 <Ruler
 
@@ -174,7 +264,9 @@ className="text-white"
 
 />
 
+
 </div>
+
 
 
 
@@ -185,7 +277,12 @@ Area
 </p>
 
 
+
+
 </div>
+
+
+
 
 
 
@@ -198,7 +295,10 @@ Area
 
 
 
+
+
 </div>
+
 
 
 
@@ -210,10 +310,13 @@ Area
 <div className="rounded-3xl bg-green-50 p-6">
 
 
+
 <div className="flex items-center gap-3">
 
 
+
 <div className="rounded-xl bg-green-600 p-3">
+
 
 <Home
 
@@ -223,7 +326,9 @@ className="text-white"
 
 />
 
+
 </div>
+
 
 
 
@@ -234,7 +339,11 @@ Property Type
 </p>
 
 
+
+
 </div>
+
+
 
 
 
@@ -248,13 +357,21 @@ Property Type
 
 
 
+
+</div>
+
+
+
+
+
+
+
+
+
 </div>
 
 
 
-
-
-</div>
 
 
 

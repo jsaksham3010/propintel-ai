@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import AuthGuard from "@/components/auth/AuthGuard";
@@ -13,146 +13,217 @@ import { createProperty } from "@/services/propertyService";
 export default function AddPropertyPage() {
 
 
-  const router = useRouter();
+const router = useRouter();
 
 
+const [user,setUser] = useState<any>(null);
 
-  const [form,setForm] = useState({
 
-    title:"",
-    city:"",
-    state:"",
-    price:"",
-    area:"",
-    propertyType:"Apartment",
+const [form,setForm] = useState({
 
-  });
+title:"",
 
+city:"",
 
+state:"",
 
-  const [error,setError] = useState("");
+price:"",
 
-  const [loading,setLoading] = useState(false);
+area:"",
 
+propertyType:"Apartment",
 
+});
 
 
-  const handleChange = (
-    e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  )=>{
 
+const [error,setError] = useState("");
 
-    setForm({
+const [loading,setLoading] = useState(false);
 
-      ...form,
 
-      [e.target.name]:e.target.value,
 
-    });
 
 
-  };
 
 
+useEffect(()=>{
 
 
+const storedUser =
+localStorage.getItem("user");
 
 
+if(storedUser){
 
-  const submit = async(
-    e:React.FormEvent
-  )=>{
+setUser(
+JSON.parse(storedUser)
+);
 
+}
 
-    e.preventDefault();
 
 
+},[]);
 
-    setError("");
 
 
 
 
-    if(
-      !form.title ||
-      !form.city ||
-      !form.state ||
-      !form.price ||
-      !form.area
-    ){
 
-      setError(
-        "Please fill all required fields."
-      );
 
-      return;
 
-    }
+const handleChange = (
 
+e:React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
 
+)=>{
 
 
-    try{
+setForm({
 
+...form,
 
-      setLoading(true);
+[e.target.name]:e.target.value,
 
+});
 
 
-      await createProperty({
+};
 
-        title:form.title,
 
-        city:form.city,
 
-        state:form.state,
 
-        price:Number(form.price),
 
-        area:Number(form.area),
 
-        propertyType:
-          form.propertyType as
-          "Apartment" |
-          "Villa" |
-          "Plot" |
-          "Commercial",
 
-      });
 
+const submit = async(
 
+e:React.FormEvent
 
-      router.push("/properties");
+)=>{
 
 
+e.preventDefault();
 
-    }
 
-    catch(err:any){
+setError("");
 
 
-      console.error(err);
 
 
-      setError(
+if(
 
-        err.response?.data?.message ||
+!form.title ||
 
-        "Failed to create property."
+!form.city ||
 
-      );
+!form.state ||
 
+!form.price ||
 
-    }
+!form.area
 
-    finally{
+){
 
-      setLoading(false);
 
-    }
+setError(
 
+"Please fill all required fields."
 
-  };
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+try{
+
+
+setLoading(true);
+
+
+
+await createProperty({
+
+title:form.title,
+
+city:form.city,
+
+state:form.state,
+
+price:Number(form.price),
+
+area:Number(form.area),
+
+propertyType:
+
+form.propertyType as
+
+"Apartment" |
+
+"Villa" |
+
+"Plot" |
+
+"Commercial",
+
+
+});
+
+
+
+router.push("/properties");
+
+
+
+}
+
+catch(err:any){
+
+
+console.error(
+
+"Create Property Error:",
+
+err
+
+);
+
+
+
+setError(
+
+err.response?.data?.message ||
+
+"Failed to create property."
+
+);
+
+
+}
+
+finally{
+
+
+setLoading(false);
+
+
+}
+
+
+
+};
+
 
 
 
@@ -164,28 +235,56 @@ return (
 
 <AuthGuard>
 
+
 <DashboardLayout>
+
 
 
 <div className="min-h-screen bg-gray-50 p-8">
 
 
+
 <div className="mx-auto max-w-3xl">
+
+
+
+
 
 
 <div className="rounded-3xl border bg-white p-8 shadow-sm">
 
 
+
+
+
 <h1 className="text-3xl font-bold text-gray-900">
 
-Add New Property
+
+{
+
+user?.role==="builder"
+
+?
+
+"Add New Listing"
+
+:
+
+"Add New Property"
+
+}
+
+
 
 </h1>
 
 
+
+
+
 <p className="mt-2 text-gray-500">
 
-Add property details for AI analysis.
+Add property details and generate AI intelligence reports.
 
 </p>
 
@@ -194,8 +293,12 @@ Add property details for AI analysis.
 
 
 
+
+
 {
+
 error &&
+
 
 <div className="mt-6 rounded-xl bg-red-50 p-4 text-red-600">
 
@@ -203,7 +306,10 @@ error &&
 
 </div>
 
+
 }
+
+
 
 
 
@@ -222,6 +328,9 @@ className="mt-8 space-y-5"
 
 
 
+
+
+
 <input
 
 name="title"
@@ -234,7 +343,10 @@ onChange={handleChange}
 
 className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
+required
+
 />
+
 
 
 
@@ -253,7 +365,10 @@ onChange={handleChange}
 
 className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
+required
+
 />
+
 
 
 
@@ -272,6 +387,8 @@ onChange={handleChange}
 
 className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
+required
+
 />
 
 
@@ -279,7 +396,10 @@ className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
 
 
+
+
 <div className="grid gap-5 md:grid-cols-2">
+
 
 
 <input
@@ -296,7 +416,10 @@ onChange={handleChange}
 
 className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
+required
+
 />
+
 
 
 
@@ -316,10 +439,17 @@ onChange={handleChange}
 
 className="w-full rounded-xl border p-3 outline-none focus:border-blue-500"
 
+required
+
 />
 
 
+
+
+
 </div>
+
+
 
 
 
@@ -340,24 +470,33 @@ className="w-full rounded-xl border p-3"
 >
 
 
-<option>
+<option value="Apartment">
+
 Apartment
+
 </option>
 
 
-<option>
+<option value="Villa">
+
 Villa
+
 </option>
 
 
-<option>
+<option value="Plot">
+
 Plot
+
 </option>
 
 
-<option>
+<option value="Commercial">
+
 Commercial
+
 </option>
+
 
 
 </select>
@@ -374,17 +513,18 @@ Commercial
 
 disabled={loading}
 
-className="w-full rounded-xl bg-blue-600 p-3 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+className="w-full rounded-xl bg-blue-600 p-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
 
 >
 
 
 {
+
 loading
 
 ?
 
-"Creating Property..."
+"Creating..."
 
 :
 
@@ -393,7 +533,10 @@ loading
 }
 
 
+
 </button>
+
+
 
 
 
@@ -404,19 +547,27 @@ loading
 
 
 
+
+
+
+
+
 </div>
 
 
-
 </div>
 
 
 </div>
+
+
 
 
 </DashboardLayout>
 
+
 </AuthGuard>
+
 
 );
 

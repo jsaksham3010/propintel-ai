@@ -6,387 +6,860 @@ import {
   Sparkles,
   Wrench,
   PaintBucket,
-  Lightbulb,
   Download,
+  TrendingUp,
+  AlertTriangle,
+  Home,
 } from "lucide-react";
 
 import { generateReportPDF } from "@/utils/generateReportPDF";
 
 
+
 interface AIReportProps {
 
-  report?: {
+  report?: any;
 
-    overallScore?: number;
-    condition?: string;
-    wallCondition?: string;
-    paintCondition?: string;
-    floorCondition?: string;
-    lighting?: string;
-    cleanliness?: string;
-    estimatedMaintenanceCost?: string;
-    riskLevel?: string;
-    recommendations?: string[];
-    summary?: string;
-
-  };
-
-
-  property?: {
-
-    title?: string;
-    city?: string;
-    state?: string;
-    propertyType?: string;
-    price?: number;
-    area?: number;
-
-    images?: {
-      url:string;
-    }[];
-
-  };
+  property?: any;
 
 }
 
 
 
+
+
 export default function AIReport({
-  report,
-  property,
+
+report,
+
+property,
+
 }:AIReportProps){
 
 
 
-  if(!report){
+if(!report){
 
-    return (
 
-      <div className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
+return (
 
-        <div className="flex items-center gap-3">
+<div className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
 
-          <Sparkles
-            className="text-indigo-600"
-            size={28}
-          />
 
-          <h2 className="text-2xl font-bold">
-            AI Property Report
-          </h2>
+<div className="flex items-center gap-3">
 
-        </div>
 
+<Sparkles className="text-indigo-600"/>
 
-        <p className="mt-4 text-gray-500">
-          No AI report available.
-        </p>
 
+<h2 className="text-2xl font-bold">
 
-      </div>
+AI Property Report
 
-    );
+</h2>
 
-  }
 
+</div>
 
 
 
 
-  const downloadPDF = ()=>{
+<p className="mt-4 text-gray-500">
 
+No AI report available.
 
-    if(!property){
+</p>
 
-      alert("Property details missing");
 
-      return;
+</div>
 
-    }
+);
 
 
-    generateReportPDF(
-      report,
-      property
-    );
+}
 
 
-  };
 
 
 
 
+const downloadPDF = ()=>{
 
-  return (
 
-    <div className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
+generateReportPDF(
 
+report,
 
-      <div className="flex items-center justify-between mb-8">
+property
 
+);
 
-        <div className="flex items-center gap-3">
 
-          <Sparkles
-            className="text-indigo-600"
-            size={28}
-          />
+};
 
-          <h2 className="text-2xl font-bold">
-            AI Property Report
-          </h2>
 
-        </div>
 
 
 
-        <button
 
-          onClick={downloadPDF}
+const risk =
 
-          className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-white font-semibold hover:bg-indigo-700"
+report.riskAnalysis?.riskLevel ||
 
-        >
+report.riskLevel ||
 
-          <Download size={18}/>
+"Not Available";
 
-          Download PDF
 
-        </button>
 
 
-      </div>
 
 
+const investmentRating =
 
+report.investmentAnalysis?.investmentRating ||
 
+report.investmentRating ||
 
-      <div className="grid gap-5 md:grid-cols-3">
+"Not Available";
 
 
-        <div className="rounded-2xl bg-green-50 p-5">
 
-          <p className="text-sm text-gray-500">
-            Overall Score
-          </p>
 
 
-          <h3 className="mt-2 text-4xl font-bold text-green-600">
 
-            {report.overallScore || 0}/100
 
-          </h3>
 
-        </div>
+return (
 
+<div className="mt-8 rounded-3xl border bg-white p-8 shadow-sm">
 
 
 
-        <div className="rounded-2xl bg-red-50 p-5">
 
-          <ShieldAlert className="text-red-600"/>
 
 
-          <p className="mt-2 text-sm text-gray-500">
-            Risk Level
-          </p>
 
+{/* Header */}
 
-          <h3 className="font-bold">
+<div className="mb-8 flex items-center justify-between">
 
-            {report.riskLevel || "-"}
 
-          </h3>
+<div className="flex items-center gap-3">
 
 
-        </div>
+<Sparkles
 
+className="text-indigo-600"
 
+size={28}
 
+/>
 
-        <div className="rounded-2xl bg-yellow-50 p-5">
 
-          <p className="text-sm text-gray-500">
-            Maintenance Cost
-          </p>
 
+<h2 className="text-2xl font-bold">
 
-          <h3 className="font-bold">
+AI Property Intelligence Report
 
-            {report.estimatedMaintenanceCost || "-"}
+</h2>
 
-          </h3>
 
-        </div>
+</div>
 
 
-      </div>
 
 
 
 
+<button
 
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
+onClick={downloadPDF}
 
+className="flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-white font-semibold hover:bg-indigo-700"
 
-        <div className="rounded-2xl border p-5">
+>
 
-          <h3 className="flex gap-2 font-bold">
 
-            <Wrench size={20}/>
+<Download size={18}/>
 
-            Condition
+Download PDF
 
-          </h3>
 
+</button>
 
-          <p className="mt-3 text-gray-600">
 
-            {report.condition || "-"}
 
-          </p>
+</div>
 
 
-        </div>
 
 
 
 
 
-        <div className="rounded-2xl border p-5">
 
-          <h3 className="flex gap-2 font-bold">
 
-            <PaintBucket size={20}/>
+{/* Builder Branding */}
 
-            Paint Condition
 
-          </h3>
+{
 
+property?.builderDetails?.companyName && (
 
-          <p className="mt-3 text-gray-600">
 
-            {report.paintCondition || "-"}
+<div className="mb-8 rounded-2xl border bg-gray-50 p-5">
 
-          </p>
 
+<div className="flex items-center justify-between">
 
-        </div>
 
+<div>
 
 
+<p className="text-sm text-gray-500">
 
+Presented By
 
-        <div className="rounded-2xl border p-5">
+</p>
 
-          <h3 className="flex gap-2 font-bold">
 
-            <Lightbulb size={20}/>
 
-            Lighting
+<h3 className="mt-1 text-xl font-bold text-gray-900">
 
-          </h3>
+{property.builderDetails.companyName}
 
+</h3>
 
-          <p className="mt-3 text-gray-600">
 
-            {report.lighting || "-"}
+</div>
 
-          </p>
 
 
-        </div>
 
 
 
 
+{
 
-        <div className="rounded-2xl border p-5">
+property.builderDetails.companyLogo && (
 
 
-          <h3 className="font-bold">
-            Floor Condition
-          </h3>
+<img
 
+src={property.builderDetails.companyLogo}
 
-          <p className="mt-3 text-gray-600">
+alt="Builder Logo"
 
-            {report.floorCondition || "-"}
+className="h-14 w-14 rounded-xl object-cover"
 
-          </p>
+/>
 
 
-        </div>
+)
 
+}
 
-      </div>
 
 
 
+</div>
 
 
+</div>
 
-      <div className="mt-8 rounded-2xl bg-indigo-50 p-6">
 
+)
 
-        <h3 className="text-xl font-bold">
-          AI Summary
-        </h3>
+}
 
 
-        <p className="mt-3 text-gray-700">
 
-          {report.summary || "-"}
 
-        </p>
 
 
-      </div>
 
 
 
+{/* Property Information */}
 
 
+{
 
-      <div className="mt-8 rounded-2xl bg-green-50 p-6">
+property?.title && (
 
 
-        <h3 className="flex items-center gap-2 text-xl font-bold text-green-700">
+<div className="mb-8 rounded-2xl border p-5">
 
-          <CheckCircle2/>
 
-          Recommendations
+<h3 className="text-xl font-bold">
 
-        </h3>
+{property.title}
 
+</h3>
 
 
-        <ul className="mt-4 space-y-2">
 
+<p className="mt-2 text-gray-500">
 
-          {(report.recommendations || []).map(
+{property.city}, {property.state}
 
-            (item,index)=>(
+</p>
 
-              <li key={index}>
-                • {item}
-              </li>
 
-            )
 
-          )}
+</div>
 
 
-        </ul>
+)
 
+}
 
-      </div>
 
 
 
 
-    </div>
 
-  );
+
+
+
+{/* Top Cards */}
+
+
+<div className="grid gap-5 md:grid-cols-3">
+
+
+
+<div className="rounded-2xl bg-green-50 p-6">
+
+
+<p className="text-sm text-gray-500">
+
+AI Score
+
+</p>
+
+
+
+<h2 className="mt-2 text-4xl font-bold text-green-600">
+
+{report.overallScore || 0}/100
+
+</h2>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="rounded-2xl bg-red-50 p-6">
+
+
+<ShieldAlert className="text-red-600"/>
+
+
+<p className="mt-2 text-gray-500">
+
+Risk Level
+
+</p>
+
+
+<h2 className="font-bold">
+
+{risk}
+
+</h2>
+
+
+</div>
+
+
+
+
+
+
+
+<div className="rounded-2xl bg-blue-50 p-6">
+
+
+<TrendingUp className="text-blue-600"/>
+
+
+<p className="mt-2 text-gray-500">
+
+Investment Rating
+
+</p>
+
+
+<h2 className="font-bold">
+
+{investmentRating}
+
+</h2>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Property Overview */}
+
+<div className="mt-8 rounded-2xl border p-6">
+
+
+<h3 className="flex items-center gap-2 text-xl font-bold">
+
+<Home size={20}/>
+
+Property Overview
+
+</h3>
+
+
+
+
+
+<div className="mt-5 grid gap-5 md:grid-cols-3">
+
+
+<div>
+
+<p className="text-gray-500">
+
+Condition
+
+</p>
+
+
+<p className="font-semibold">
+
+{report.propertyOverview?.condition || "Not Available"}
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<p className="text-gray-500">
+
+Estimated Age
+
+</p>
+
+
+<p className="font-semibold">
+
+{report.propertyOverview?.estimatedAge || "Not Available"}
+
+</p>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<p className="text-gray-500">
+
+Quality
+
+</p>
+
+
+<p className="font-semibold">
+
+{report.propertyOverview?.propertyQuality || "Not Available"}
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Structural + Interior */}
+
+<div className="mt-8 grid gap-6 md:grid-cols-2">
+
+
+
+<div className="rounded-2xl border p-6">
+
+
+<h3 className="flex gap-2 font-bold">
+
+<Wrench size={20}/>
+
+Structural Analysis
+
+</h3>
+
+
+
+<p className="mt-4 text-gray-600">
+
+Walls:
+
+{" "}
+
+{report.structuralAnalysis?.wallCondition || "Not Available"}
+
+</p>
+
+
+
+
+<p className="mt-2 text-gray-600">
+
+Floor:
+
+{" "}
+
+{report.structuralAnalysis?.floorCondition || "Not Available"}
+
+</p>
+
+
+
+
+<p className="mt-2 text-gray-600">
+
+Structural Risk:
+
+{" "}
+
+{report.structuralAnalysis?.structuralRisk || "Not Available"}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div className="rounded-2xl border p-6">
+
+
+<h3 className="flex gap-2 font-bold">
+
+<PaintBucket size={20}/>
+
+Interior Analysis
+
+</h3>
+
+
+
+
+<p className="mt-4 text-gray-600">
+
+Paint:
+
+{" "}
+
+{report.interiorAnalysis?.paintCondition || "Not Available"}
+
+</p>
+
+
+
+
+<p className="mt-2 text-gray-600">
+
+Lighting:
+
+{" "}
+
+{report.interiorAnalysis?.lighting || "Not Available"}
+
+</p>
+
+
+
+
+<p className="mt-2 text-gray-600">
+
+Cleanliness:
+
+{" "}
+
+{report.interiorAnalysis?.cleanliness || "Not Available"}
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Maintenance */}
+
+<div className="mt-8 rounded-2xl bg-yellow-50 p-6">
+
+
+<h3 className="flex items-center gap-2 text-xl font-bold">
+
+<AlertTriangle/>
+
+Maintenance Analysis
+
+</h3>
+
+
+
+<p className="mt-4">
+
+Estimated Cost:
+
+{" "}
+
+<b>
+
+{report.maintenanceAnalysis?.estimatedMaintenanceCost || "Not Available"}
+
+</b>
+
+</p>
+
+
+
+<ul className="mt-4 space-y-2">
+
+
+{
+
+(report.maintenanceAnalysis?.urgentRepairs || [])
+
+.map(
+
+(item:string,index:number)=>(
+
+<li key={index}>
+
+• {item}
+
+</li>
+
+)
+
+)
+
+
+}
+
+
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Investment */}
+
+<div className="mt-8 rounded-2xl bg-blue-50 p-6">
+
+
+<h3 className="text-xl font-bold">
+
+Investment Analysis
+
+</h3>
+
+
+
+<p className="mt-3">
+
+Rental Potential:
+
+{" "}
+
+<b>
+
+{report.investmentAnalysis?.rentalPotential || "Not Available"}
+
+</b>
+
+
+</p>
+
+
+
+
+<p className="mt-2">
+
+Resale Potential:
+
+{" "}
+
+<b>
+
+{report.investmentAnalysis?.resalePotential || "Not Available"}
+
+</b>
+
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Summary */}
+
+<div className="mt-8 rounded-2xl bg-indigo-50 p-6">
+
+
+<h3 className="text-xl font-bold">
+
+AI Summary
+
+</h3>
+
+
+<p className="mt-3 text-gray-700">
+
+{report.summary || "Not Available"}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* Recommendations */}
+
+<div className="mt-8 rounded-2xl bg-green-50 p-6">
+
+
+<h3 className="flex items-center gap-2 text-xl font-bold text-green-700">
+
+<CheckCircle2/>
+
+Recommendations
+
+</h3>
+
+
+
+
+<ul className="mt-4 space-y-2">
+
+
+{
+
+(report.recommendations || [])
+
+.map(
+
+(item:string,index:number)=>(
+
+
+<li key={index}>
+
+• {item}
+
+</li>
+
+
+)
+
+)
+
+
+}
+
+
+
+</ul>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+);
+
 
 }

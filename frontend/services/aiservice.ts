@@ -1,95 +1,203 @@
 import api from "./api";
 
 
+
 export interface AIReport {
+
 
   overallScore?: number;
 
-  condition?: string;
 
-  wallCondition?: string;
 
-  paintCondition?: string;
+  propertyOverview?: {
 
-  floorCondition?: string;
+    condition?: string;
 
-  lighting?: string;
+    estimatedAge?: string;
 
-  cleanliness?: string;
+    propertyQuality?: string;
 
-  estimatedMaintenanceCost?: string;
+  };
 
-  riskLevel?: string;
+
+
+  structuralAnalysis?: {
+
+    wallCondition?: string;
+
+    floorCondition?: string;
+
+    ceilingCondition?: string;
+
+    structuralRisk?: string;
+
+  };
+
+
+
+  interiorAnalysis?: {
+
+    paintCondition?: string;
+
+    lighting?: string;
+
+    ventilation?: string;
+
+    cleanliness?: string;
+
+  };
+
+
+
+  maintenanceAnalysis?: {
+
+    estimatedMaintenanceCost?: string;
+
+    urgentRepairs?: string[];
+
+    futureMaintenance?: string[];
+
+  };
+
+
+
+  investmentAnalysis?: {
+
+    investmentRating?: string;
+
+    rentalPotential?: string;
+
+    resalePotential?: string;
+
+    recommendation?: string;
+
+  };
+
+
+
+  riskAnalysis?: {
+
+    riskLevel?: string;
+
+    riskFactors?: string[];
+
+    concerns?: string[];
+
+  };
+
+
 
   recommendations?: string[];
 
+
   summary?: string;
 
+
 }
+
+
+
+
 
 
 
 export interface AnalyzeResponse {
 
-  success: boolean;
 
-  message: string;
+  success:boolean;
 
-  propertyId: string;
 
-  propertyTitle: string;
+  message:string;
 
-  analyzedAt: string;
 
-  report: AIReport;
+  propertyId:string;
+
+
+  propertyTitle:string;
+
+
+  analyzedAt:string;
+
+
+  report:AIReport;
+
 
 }
+
+
+
+
 
 
 
 export interface PropertyReport {
 
-  _id: string;
 
-  title: string;
-
-  city: string;
-
-  state: string;
-
-  propertyType: string;
-
-  price: number;
-
-  area: number;
-
-  analyzedAt: string;
-
-  createdAt: string;
+  _id:string;
 
 
-  images?: {
+  title:string;
 
-    url: string;
 
-    public_id?: string;
+  city:string;
+
+
+  state:string;
+
+
+  propertyType:string;
+
+
+  price:number;
+
+
+  area:number;
+
+
+
+  analyzedAt:string;
+
+
+  createdAt:string;
+
+
+
+  images?:{
+
+
+    url:string;
+
+    public_id?:string;
+
 
   }[];
 
 
-  aiReport: AIReport;
+
+
+  aiReport:AIReport;
+
 
 }
+
+
+
+
+
 
 
 
 export interface GetAllReportsResponse {
 
-  success: boolean;
 
-  count: number;
+  success:boolean;
 
-  reports: PropertyReport[];
+
+  count:number;
+
+
+  reports:PropertyReport[];
+
 
 }
 
@@ -97,23 +205,33 @@ export interface GetAllReportsResponse {
 
 
 
+
+
+
+
+// ============================
 // Analyze Property
+// ============================
 
 export const analyzeProperty = async (
 
-  propertyId: string
+propertyId:string
 
-): Promise<AnalyzeResponse> => {
-
-
-  const { data } = await api.post(
-
-    `/ai/analyze/${propertyId}`
-
-  );
+):Promise<AnalyzeResponse>=>{
 
 
-  return data;
+const {data}=
+
+await api.post(
+
+`/ai/analyze/${propertyId}`
+
+);
+
+
+
+return data;
+
 
 };
 
@@ -123,23 +241,31 @@ export const analyzeProperty = async (
 
 
 
+
+
+// ============================
 // Get Single AI Report
+// ============================
 
 export const getAIReport = async (
 
-  propertyId: string
+propertyId:string
 
-): Promise<AnalyzeResponse> => {
-
-
-  const { data } = await api.get(
-
-    `/ai/report/${propertyId}`
-
-  );
+):Promise<AnalyzeResponse>=>{
 
 
-  return data;
+const {data}=
+
+await api.get(
+
+`/ai/report/${propertyId}`
+
+);
+
+
+
+return data;
+
 
 };
 
@@ -149,23 +275,33 @@ export const getAIReport = async (
 
 
 
-// Get All AI Reports
+
+
+// ============================
+// Get All Reports
+// ============================
 
 export const getAllAIReports = async (
 
-): Promise<GetAllReportsResponse> => {
+):Promise<GetAllReportsResponse>=>{
 
 
-  const { data } = await api.get(
+const {data}=
 
-    "/ai/reports"
+await api.get(
 
-  );
+"/ai/reports"
+
+);
 
 
-  return data;
+
+return data;
+
 
 };
+
+
 
 
 
@@ -174,11 +310,13 @@ export const getAllAIReports = async (
 
 const aiService = {
 
-  analyzeProperty,
 
-  getAIReport,
+analyzeProperty,
 
-  getAllAIReports,
+getAIReport,
+
+getAllAIReports,
+
 
 };
 
